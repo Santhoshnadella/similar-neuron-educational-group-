@@ -89,7 +89,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    cognitive_profile = relationship("CognitiveProfile", back_populates="user")
+    cognitive_profile = relationship("CognitiveProfile", back_populates="user", lazy="selectin")
     content = relationship("Content", back_populates="creator", foreign_keys="Content.creator_id")
     learning_sessions = relationship("LearningSession", back_populates="user")
     follows = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower")
