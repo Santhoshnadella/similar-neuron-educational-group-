@@ -1,0 +1,24 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+pydantic-settings==2.6.1
+sqlalchemy==2.0.36
+alembic==1.14.0
+aiosqlite==0.20.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.17
+httpx==0.28.1
+# AI
+langchain==0.3.12
+langchain-google-genai==2.0.7
+langgraph==0.2.56
+# ML / Embeddings
+sentence-transformers==3.3.1
+numpy==2.2.0
+scikit-learn==1.6.0
+# Utils
+python-dotenv==1.0.1
+aiofiles==24.1.0
+pillow==11.0.0
+websockets==14.1

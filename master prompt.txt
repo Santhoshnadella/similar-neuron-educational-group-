@@ -1,0 +1,848 @@
+# AI-Native Knowledge Social Network + Adaptive LMS
+
+## End-to-End System Architecture MegaPrompt
+
+Use this as a master systems-design prompt for an AI coding agent, CTO co-pilot, or engineering architecture generator.
+
+---
+
+# SYSTEM NAME
+
+**KnowledgeVerse**
+An AI-native educational social network + adaptive LMS + cognitive operating system.
+
+---
+
+# CORE VISION
+
+Build a platform that combines:
+
+* Instagram/TikTok engagement
+* YouTube depth
+* Duolingo gamification
+* Notion knowledge systems
+* Khan Academy mastery learning
+* OpenAI-style AI tutoring
+* Cognitive science
+* Adaptive learning
+* Knowledge graphs
+* Human performance optimization
+
+The platform should transform:
+
+* scrolling → learning
+* entertainment → cognitive growth
+* passive consumption → mastery
+* fragmented knowledge → connected intelligence
+
+---
+
+# PRIMARY PRODUCT MODULES
+
+## 1. Educational Social Feed
+
+Short-form educational content.
+
+## 2. AI Adaptive LMS
+
+Personalized learning pathways.
+
+## 3. Knowledge Graph Engine
+
+Concept dependency mapping.
+
+## 4. AI Agent Ecosystem
+
+Specialized educational agents.
+
+## 5. Cognitive Assessment Engine
+
+Learner profiling.
+
+## 6. Creator Studio
+
+AI-assisted educational content creation.
+
+## 7. Deep Learning Mode
+
+Focus-first long-form mastery.
+
+## 8. Gamified Skill Trees
+
+Progression systems.
+
+## 9. Community Layer
+
+Debates, guilds, projects.
+
+## 10. Human Optimization Dashboard
+
+Memory, focus, cognition analytics.
+
+---
+
+# FULL TECH STACK
+
+# FRONTEND
+
+## Web App
+
+* Next.js 15
+* React 19
+* TypeScript
+* TailwindCSS
+* Framer Motion
+* Zustand
+* React Query / TanStack Query
+* ShadCN UI
+* WebSockets
+* Three.js
+* D3.js
+* React Flow
+* TipTap Editor
+
+## Mobile App
+
+* React Native Expo
+* NativeWind
+* Reanimated
+* Expo Router
+
+## Visualization
+
+* Three.js
+* WebGL
+* PixiJS
+* D3
+* Mermaid
+
+---
+
+# BACKEND
+
+## Core Backend
+
+* FastAPI
+* Python
+* Node.js microservices
+
+## AI Layer
+
+* LangGraph
+* LangChain
+* CrewAI
+* DSPy
+* LlamaIndex
+
+## Realtime Layer
+
+* Socket.io
+* Redis Pub/Sub
+* Kafka
+
+## API Gateway
+
+* Kong
+  OR
+* NGINX Gateway
+
+---
+
+# DATABASES
+
+## Primary DB
+
+PostgreSQL
+
+## Vector DB
+
+* Qdrant
+  OR
+* Weaviate
+  OR
+* Pinecone
+
+## Graph DB
+
+Neo4j
+
+## Cache
+
+Redis
+
+## Analytics
+
+ClickHouse
+
+## Blob Storage
+
+S3 / Cloudflare R2
+
+---
+
+# AI MODELS
+
+## LLMs
+
+* GPT models
+* Claude
+* Gemini
+* Open-source Llama models
+
+## Embedding Models
+
+* BGE
+* OpenAI embeddings
+* InstructorXL
+
+## Speech
+
+* Whisper
+* ElevenLabs
+
+## Vision
+
+* Florence
+* SAM2
+* DINOv3
+
+---
+
+# CLOUD INFRASTRUCTURE
+
+## Cloud
+
+AWS
+
+## Services
+
+* ECS
+* EKS
+* Lambda
+* S3
+* CloudFront
+* RDS
+* ElastiCache
+
+## CI/CD
+
+* GitHub Actions
+* Docker
+* Terraform
+* Kubernetes
+
+---
+
+# CORE AI AGENTS
+
+# 1. Research Agent
+
+Purpose:
+
+* Search web
+* Find resources
+* Rank quality
+* Summarize
+
+Pipeline:
+Query → Search → Retrieval → Validation → Summary → Resource Graph
+
+---
+
+# 2. Curriculum Agent
+
+Purpose:
+
+* Generate learning roadmap
+* Build dependency graph
+* Apply Pareto principle
+
+Pipeline:
+Topic → Concept Extraction → Graph Mapping → Difficulty Scaling
+
+---
+
+# 3. Tutor Agent
+
+Purpose:
+
+* Teach concepts
+* Adapt explanations
+* Detect confusion
+
+Modes:
+
+* Beginner
+* Intermediate
+* Expert
+* Feynman mode
+* Story mode
+* Analogy mode
+
+---
+
+# 4. Memory Agent
+
+Purpose:
+
+* Spaced repetition
+* Recall scheduling
+* Forgetting curve optimization
+
+Models:
+
+* FSRS
+* SM2
+
+---
+
+# 5. Socratic Agent
+
+Purpose:
+
+* Ask reasoning questions
+* Develop critical thinking
+
+---
+
+# 6. Focus Coach Agent
+
+Purpose:
+
+* Detect distraction
+* Optimize session timing
+* Recommend breaks
+
+---
+
+# 7. Creativity Agent
+
+Purpose:
+
+* Cross-domain idea synthesis
+* Project suggestions
+* Innovation exercises
+
+---
+
+# DATABASE SCHEMA
+
+# USERS
+
+```sql
+users
+- id
+- username
+- email
+- cognitive_profile_id
+- learning_level
+- streak
+- xp
+- focus_score
+- curiosity_score
+- created_at
+```
+
+---
+
+# CONTENT
+
+```sql
+content
+- id
+- creator_id
+- title
+- type
+- transcript
+- embeddings
+- difficulty_level
+- estimated_learning_value
+- retention_score
+- engagement_score
+```
+
+---
+
+# KNOWLEDGE GRAPH
+
+```sql
+concepts
+- id
+- name
+- domain
+- parent_concept
+- prerequisites
+- mastery_weight
+```
+
+---
+
+# LEARNING SESSIONS
+
+```sql
+learning_sessions
+- id
+- user_id
+- content_id
+- watch_time
+- comprehension_score
+- recall_score
+- focus_score
+```
+
+---
+
+# COGNITIVE PROFILE
+
+```sql
+cognitive_profiles
+- id
+- working_memory
+- processing_speed
+- attention_control
+- spatial_reasoning
+- creativity
+- emotional_regulation
+```
+
+---
+
+# API ARCHITECTURE
+
+# AUTH
+
+```http
+POST /auth/register
+POST /auth/login
+POST /auth/oauth
+```
+
+---
+
+# FEED APIs
+
+```http
+GET /feed/personalized
+GET /feed/trending
+GET /feed/following
+```
+
+---
+
+# AI APIs
+
+```http
+POST /ai/tutor
+POST /ai/research
+POST /ai/generate-roadmap
+POST /ai/explain
+POST /ai/quiz
+```
+
+---
+
+# LEARNING APIs
+
+```http
+GET /learning/pathway/:id
+POST /learning/session/start
+POST /learning/session/end
+POST /learning/assessment
+```
+
+---
+
+# KNOWLEDGE GRAPH APIs
+
+```http
+GET /concepts
+GET /concepts/:id
+GET /concept-map/:topic
+```
+
+---
+
+# RECOMMENDATION ENGINE
+
+# INPUT SIGNALS
+
+* Watch time
+* Replays
+* Recall performance
+* Quiz performance
+* Curiosity patterns
+* Session duration
+* Focus quality
+* Knowledge gaps
+* Goals
+
+---
+
+# OUTPUTS
+
+* Personalized feed
+* Learning roadmap
+* Revision recommendations
+* Deep-learning suggestions
+
+---
+
+# FEED RANKING LOGIC
+
+# Formula
+
+```python
+FeedScore =
+(
+EngagementWeight * EngagementScore
++
+LearningValueWeight * EducationalQuality
++
+RetentionWeight * RecallImprovement
++
+CuriosityWeight * TopicNovelty
++
+MasteryWeight * SkillProgression
+)
+-
+AddictionPenalty
+```
+
+---
+
+# COGNITIVE ASSESSMENT ENGINE
+
+# ASSESSMENTS
+
+## Working Memory
+
+n-back tests
+
+## Attention
+
+continuous performance tasks
+
+## Spatial Reasoning
+
+mental rotation tests
+
+## Processing Speed
+
+timed pattern recognition
+
+## Verbal Intelligence
+
+semantic reasoning
+
+---
+
+# SCORING
+
+```python
+CognitiveIndex =
+(
+0.2 * WorkingMemory
++
+0.15 * Attention
++
+0.2 * ProcessingSpeed
++
+0.2 * LogicalReasoning
++
+0.15 * Creativity
++
+0.1 * EmotionalRegulation
+)
+```
+
+---
+
+# LEARNING MODES
+
+# 1. Scroll Learning
+
+Microlearning feed.
+
+# 2. Deep Work Mode
+
+Distraction-free mastery.
+
+# 3. Exploration Mode
+
+Knowledge graph navigation.
+
+# 4. Challenge Mode
+
+Quizzes and games.
+
+# 5. Project Mode
+
+Real-world building.
+
+---
+
+# CONTENT TEMPLATE
+
+# KNOWLEDGE REEL TEMPLATE
+
+## Hook
+
+Pattern interrupt.
+
+## Curiosity Gap
+
+“What if…”
+
+## Core Insight
+
+Pareto concept.
+
+## Visualization
+
+Diagram/animation.
+
+## Retrieval Prompt
+
+Quick quiz.
+
+## CTA
+
+Continue learning path.
+
+---
+
+# CREATOR UPLOAD SCHEMA
+
+```json
+{
+  "title": "",
+  "domain": "",
+  "difficulty": 1,
+  "concepts": [],
+  "prerequisites": [],
+  "learning_objective": "",
+  "feynman_explanation": "",
+  "quiz_questions": [],
+  "references": []
+}
+```
+
+---
+
+# FOLDER STRUCTURE
+
+# FRONTEND
+
+```bash
+frontend/
+├── app/
+├── components/
+├── features/
+├── hooks/
+├── lib/
+├── services/
+├── store/
+├── styles/
+├── types/
+├── utils/
+├── visualizations/
+└── ai/
+```
+
+---
+
+# BACKEND
+
+```bash
+backend/
+├── api/
+├── agents/
+├── ai/
+├── analytics/
+├── auth/
+├── cognitive/
+├── content/
+├── feed/
+├── graphs/
+├── learning/
+├── memory/
+├── recommendation/
+├── realtime/
+├── search/
+├── users/
+├── workers/
+└── utils/
+```
+
+---
+
+# AI ORCHESTRATION FLOW
+
+```text
+User Query
+   ↓
+Intent Detection
+   ↓
+Agent Router
+   ↓
+Research Agent
+   ↓
+Curriculum Agent
+   ↓
+Tutor Agent
+   ↓
+Memory Agent
+   ↓
+Personalized Output
+```
+
+---
+
+# DATA FLOW
+
+# CONTENT INGESTION
+
+Creator Upload
+→ Transcription
+→ Embedding Generation
+→ Concept Extraction
+→ Knowledge Graph Linking
+→ Difficulty Estimation
+→ Feed Indexing
+
+---
+
+# PERSONALIZATION FLOW
+
+User Interaction
+→ Behavioral Analytics
+→ Cognitive Model Update
+→ Recommendation Engine
+→ Adaptive Feed
+
+---
+
+# KNOWLEDGE GRAPH FLOW
+
+Topic
+→ NLP Concept Extraction
+→ Semantic Linking
+→ Dependency Mapping
+→ Graph Storage
+
+---
+
+# MVP ROADMAP
+
+# PHASE 1
+
+* Feed
+* Authentication
+* AI tutor
+* Creator uploads
+* Basic recommendation
+
+# PHASE 2
+
+* Knowledge graph
+* Cognitive profiling
+* Adaptive pathways
+* Quizzes
+
+# PHASE 3
+
+* AI agents
+* Community systems
+* Deep work mode
+* Gamification
+
+# PHASE 4
+
+* AR/VR
+* Voice tutoring
+* Multi-agent orchestration
+* Research copilots
+
+---
+
+# BUSINESS MODEL
+
+## Freemium
+
+Basic feed free.
+
+## Premium
+
+* AI tutor
+* Advanced analytics
+* Deep work mode
+* Personalized pathways
+
+## Creator Monetization
+
+* subscriptions
+* sponsorships
+* courses
+* mentorship
+
+## Enterprise
+
+* schools
+* universities
+* companies
+
+---
+
+# ETHICAL DESIGN RULES
+
+# DO
+
+* optimize learning
+* preserve autonomy
+* encourage deep thinking
+* reward mastery
+
+# DO NOT
+
+* maximize addiction
+* exploit dopamine loops
+* manipulate emotions
+* create shallow engagement
+
+---
+
+# FUTURE MODULES
+
+* AI-generated simulations
+* Brain-computer interfaces
+* Neurofeedback integration
+* Adaptive VR learning
+* Autonomous research agents
+* Global open knowledge graph
+* AI-generated labs
+* Real-time multilingual tutoring
+
+---
+
+# FINAL OBJECTIVE
+
+Build:
+
+* a learning operating system
+* an educational social network
+* a cognitive augmentation platform
+* a human potential ecosystem
+* a knowledge civilization infrastructure
+
+that combines:
+
+* neuroscience
+* AI
+* systems thinking
+* classical education
+* cognitive science
+* social learning
+* creativity
+* deep understanding
+
+into one unified platform.
