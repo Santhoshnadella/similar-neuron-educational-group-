@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuthStore } from "@/store/authStore";
-import { usersApi, type User } from "@/lib/api";
-import { BookOpen, Zap, Flame, Brain, Star, BarChart2, Calendar, Award } from "lucide-react";
+import { usersApi, communityApi, type User, type Achievement, type Guild } from "@/lib/api";
+import { BookOpen, Zap, Flame, Brain, Star, BarChart2, Calendar, Award, Shield } from "lucide-react";
 
 const RADAR_KEYS = [
   { key: "working_memory",      label: "Memory",     angle: -90 },
@@ -60,30 +60,43 @@ export default function ProfilePage() {
   const { isAuthenticated, user: storeUser } = useAuthStore();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(storeUser);
-  const [loading, setLoading] = useState(false);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [guilds, setGuilds] = useState<Guild[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) { router.push("/login"); return; }
-    usersApi.me().then(setUser).catch(() => {});
+    Promise.all([
+      usersApi.me().then(setUser),
+      usersApi.achievements().then(res => setAchievements(res.achievements)),
+      communityApi.guilds().then(res => setGuilds(res.guilds))
+    ]).catch(() => {}).finally(() => setLoading(false));
   }, [isAuthenticated]);
 
   const cp = user?.cognitive_profile;
   const xpToNext = user ? 1000 - (user.xp % 1000) : 0;
   const xpPct = user ? ((user.xp % 1000) / 10) : 0;
 
-  const ACHIEVEMENTS = [
-    { icon: "🔥", name: "Streak Master", desc: `${user?.streak ?? 0} day streak`, unlocked: (user?.streak ?? 0) > 0 },
-    { icon: "⚡", name: "Quick Learner", desc: "Completed first lesson", unlocked: (user?.xp ?? 0) > 0 },
-    { icon: "🧠", name: "Deep Thinker",  desc: "Studied for 1 hour",   unlocked: (user?.xp ?? 0) > 100 },
-    { icon: "🏆", name: "Level 5",       desc: "Reach level 5",        unlocked: (user?.level ?? 0) >= 5 },
-  ];
+
 
   return (
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
         <div style={{ maxWidth: 840, margin: "0 auto" }}>
-
+          {loading ? (
+            <div style={{ padding: "40px", textAlign: "center" }}>
+              <div className="skeleton" style={{ width: "100%", height: 160, borderRadius: 16, marginBottom: 24 }}></div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 24 }}>
+                {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 100, borderRadius: 12 }}></div>)}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div className="skeleton" style={{ height: 300, borderRadius: 16 }}></div>
+                <div className="skeleton" style={{ height: 300, borderRadius: 16 }}></div>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Hero */}
           <motion.div
             className="kv-card"
@@ -220,35 +233,66 @@ export default function ProfilePage() {
               </h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {ACHIEVEMENTS.map((a, i) => (
+                {achievements.length > 0 ? achievements.map((a, i) => (
                   <motion.div
-                    key={a.name}
+                    key={a.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 + i * 0.07 }}
                     style={{
                       display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
-                      background: a.unlocked ? "rgba(16,185,129,0.06)" : "var(--kv-bg-secondary)",
-                      border: `1px solid ${a.unlocked ? "rgba(16,185,129,0.2)" : "var(--kv-border)"}`,
+                      background: "rgba(16,185,129,0.06)",
+                      border: "1px solid rgba(16,185,129,0.2)",
                       borderRadius: "var(--kv-radius-md)",
-                      opacity: a.unlocked ? 1 : 0.5,
                     }}
                   >
-                    <span style={{ fontSize: 24 }}>{a.icon}</span>
+                    <span style={{ fontSize: 24 }}>🏆</span>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: a.unlocked ? "var(--kv-text-primary)" : "var(--kv-text-muted)" }}>
-                        {a.name}
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--kv-text-primary)" }}>
+                        {a.title}
                       </div>
-                      <div style={{ fontSize: 11, color: "var(--kv-text-muted)" }}>{a.desc}</div>
+                      <div style={{ fontSize: 11, color: "var(--kv-text-muted)" }}>{a.description}</div>
                     </div>
-                    {a.unlocked && (
-                      <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--kv-accent-emerald)", fontWeight: 700 }}>✓ Unlocked</span>
-                    )}
+                    <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--kv-accent-emerald)", fontWeight: 700 }}>✓ Unlocked</span>
                   </motion.div>
+                )) : (
+                  <div style={{ fontSize: 13, color: "var(--kv-text-muted)" }}>No achievements yet. Keep learning!</div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Guilds */}
+            <motion.div
+              className="kv-card"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              style={{ padding: 24, gridColumn: "1 / -1" }}
+            >
+              <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                <Shield size={16} color="var(--kv-accent-cyan)" />
+                Learning Guilds
+              </h2>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {guilds.map((g, i) => (
+                  <div key={g.id} style={{
+                    padding: "16px",
+                    background: "var(--kv-bg-elevated)",
+                    border: "1px solid var(--kv-border)",
+                    borderRadius: "var(--kv-radius-md)",
+                  }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--kv-text-primary)", marginBottom: 4 }}>
+                      {g.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--kv-text-muted)" }}>{g.description}</div>
+                  </div>
                 ))}
               </div>
             </motion.div>
           </div>
+            </>
+          )}
         </div>
       </main>
       <BottomNav />

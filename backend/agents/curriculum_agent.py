@@ -71,11 +71,11 @@ MOCK_ROADMAPS = {
 
 
 async def generate_roadmap(topic: str, level: str, goal: Optional[str]) -> RoadmapResponse:
-    """Generate a learning roadmap for the given topic using Gemma 4."""
-    from agents.lm_studio import lm_studio
+    """Generate a learning roadmap for the given topic using Groq API."""
+    from agents.ai_client import ai_client
     import json
     
-    if await lm_studio.is_available():
+    if await ai_client.is_available():
         try:
             goal_str = f" Goal: {goal}." if goal else ""
             prompt = f"""Create a learning roadmap for "{topic}" at {level} level.{goal_str}
@@ -102,7 +102,7 @@ Return JSON: {{
 Generate 5-8 nodes. Return only valid JSON."""
             
             messages = [{"role": "system", "content": "You are an expert curriculum designer. Return only valid JSON."}, {"role": "user", "content": prompt}]
-            raw = await lm_studio.chat(messages=messages, temperature=0.4, max_tokens=1024)
+            raw = await ai_client.chat(messages=messages, temperature=0.4, max_tokens=1024)
             
             raw = raw.strip()
             if "```" in raw:

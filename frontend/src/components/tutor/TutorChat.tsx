@@ -7,6 +7,7 @@ import { useTutorStore } from "@/store/tutorStore";
 import { useAuthStore } from "@/store/authStore";
 import { aiApi } from "@/lib/api";
 import { ModeSelector } from "./ModeSelector";
+import ReactMarkdown from "react-markdown";
 
 export function TutorChat() {
   const { messages, mode, topic, isLoading, streamingContent, addMessage, setLoading, appendStream, commitStream } = useTutorStore();
@@ -118,8 +119,14 @@ export function TutorChat() {
               }}>
                 {msg.role === "user" ? <User size={14} color="white" /> : <Bot size={14} color="var(--kv-accent-cyan)" />}
               </div>
-              <div className={`message-bubble ${msg.role}`} style={{ whiteSpace: "pre-wrap" }}>
-                {msg.content}
+              <div className={`message-bubble ${msg.role}`} style={{ overflowX: "auto" }}>
+                {msg.role === "assistant" ? (
+                  <ReactMarkdown className="prose prose-invert max-w-none text-[14px]">
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  <span style={{ whiteSpace: "pre-wrap" }}>{msg.content}</span>
+                )}
               </div>
             </motion.div>
           ))}
@@ -139,9 +146,10 @@ export function TutorChat() {
             }}>
               <Bot size={14} color="var(--kv-accent-cyan)" />
             </div>
-            <div className="message-bubble assistant" style={{ whiteSpace: "pre-wrap" }}>
-              {streamingContent}
-              <span style={{ display: "inline-block", width: 2, height: "1em", background: "var(--kv-accent-violet)", marginLeft: 2, animation: "pulse-glow 1s infinite" }} />
+            <div className="message-bubble assistant" style={{ overflowX: "auto" }}>
+              <ReactMarkdown className="prose prose-invert max-w-none text-[14px]">
+                {streamingContent + " ▌"}
+              </ReactMarkdown>
             </div>
           </motion.div>
         )}
@@ -156,9 +164,12 @@ export function TutorChat() {
             }}>
               <Bot size={14} color="var(--kv-accent-cyan)" />
             </div>
-            <div className="message-bubble assistant" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
-              <span style={{ color: "var(--kv-text-muted)", fontSize: 14 }}>Thinking…</span>
+            <div className="message-bubble assistant" style={{ display: "flex", gap: 8, alignItems: "center", padding: "12px 16px" }}>
+              <div style={{ display: "flex", gap: 4 }}>
+                <span className="typing-dot" style={{ animationDelay: "0s" }}></span>
+                <span className="typing-dot" style={{ animationDelay: "0.2s" }}></span>
+                <span className="typing-dot" style={{ animationDelay: "0.4s" }}></span>
+              </div>
             </div>
           </div>
         )}
@@ -190,7 +201,18 @@ export function TutorChat() {
         </motion.button>
       </div>
 
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .typing-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background-color: var(--kv-accent-violet);
+          animation: typing 1.4s infinite ease-in-out both;
+        }
+        @keyframes typing {
+          0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

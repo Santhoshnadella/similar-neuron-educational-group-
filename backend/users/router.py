@@ -39,8 +39,43 @@ async def update_xp(
 
 @router.get("/me/achievements")
 async def get_achievements(current_user: User = Depends(get_current_user)):
-    """Phase 3 Gamification: Get user achievements"""
-    return {"achievements": [{"id": 1, "title": "First Step", "description": "Completed first learning session", "unlocked": True}]}
+    """Phase 3 Gamification: Get user achievements dynamically generated based on progression."""
+    achievements = []
+    
+    # 1. First Step
+    achievements.append({
+        "id": "ach_first_step",
+        "title": "First Step",
+        "description": "Start your learning journey",
+        "unlocked": current_user.xp > 0
+    })
+    
+    # 2. Streak achievements
+    achievements.append({
+        "id": "ach_streak_3",
+        "title": "Consistent Learner",
+        "description": "Reach a 3-day learning streak",
+        "unlocked": current_user.streak >= 3
+    })
+    
+    # 3. Level achievements
+    achievements.append({
+        "id": "ach_level_5",
+        "title": "Scholar",
+        "description": "Reach Level 5",
+        "unlocked": current_user.level >= 5
+    })
+    
+    # 4. Deep Work
+    # Since we don't have a deep work count yet, we'll mark it false by default unless they have high XP
+    achievements.append({
+        "id": "ach_deep_work",
+        "title": "Deep Thinker",
+        "description": "Complete your first deep work session",
+        "unlocked": current_user.xp > 1000  # Proxy for now
+    })
+    
+    return {"achievements": achievements}
 
 
 @router.get("/search")

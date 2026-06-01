@@ -45,6 +45,7 @@ export function KnowledgeReel({ item, index = 0 }: Props) {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.06, duration: 0.4 }}
+        style={{ scrollSnapAlign: "start", marginBottom: 32, scrollMarginTop: 20 }}
       >
         {/* Header */}
         <div className="flex items-center gap-2 mb-4" style={{ marginBottom: 16 }}>
@@ -114,8 +115,10 @@ export function KnowledgeReel({ item, index = 0 }: Props) {
           <motion.button
             className={`action-btn ${liked ? "liked" : ""}`}
             onClick={handleLike}
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.8 }}
+            animate={liked ? { scale: [1, 1.3, 1], transition: { duration: 0.3 } } : {}}
             id={`like-btn-${item.id}`}
+            style={{ color: liked ? "var(--kv-accent-pink)" : undefined }}
           >
             <Heart size={15} fill={liked ? "currentColor" : "none"} />
             {likeCount}

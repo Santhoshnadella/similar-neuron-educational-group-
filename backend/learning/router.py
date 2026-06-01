@@ -208,11 +208,23 @@ async def get_learning_pathway(
 @router.post("/session/deep-work")
 async def start_deep_work(
     duration_minutes: int = Body(60),
+    topic_id: str = Body(None),
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Phase 3 Deep Work: Start a highly focused, gamified session."""
+    session = LearningSession(
+        user_id=current_user.id,
+        content_id=topic_id,
+        mode="deep_work",
+    )
+    db.add(session)
+    await db.flush()
+    await db.refresh(session)
+    
     return {
         "status": "active",
+        "session_id": session.id,
         "duration": duration_minutes,
         "xp_multiplier": 2.0,
         "message": "Deep work mode activated. Distractions blocked."

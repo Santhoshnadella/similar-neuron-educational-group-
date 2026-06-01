@@ -132,27 +132,41 @@ Return ONLY valid JSON (no markdown):
 
 
 async def _generate_embedding(content: Content) -> None:
-    """Generate vector embedding for semantic search (Qdrant integration stub)."""
-    
+    """Generate vector embedding for semantic search and store in Qdrant."""
     try:
         from sentence_transformers import SentenceTransformer
+        from db.qdrant import get_qdrant_client, CONTENT_COLLECTION
+        from qdrant_client.models import PointStruct
+        import uuid
         
-        # Load embedding model
+        # Load embedding model (should ideally be cached globally, but doing locally for now)
         model = SentenceTransformer("all-MiniLM-L6-v2")
         
         # Create embedding text
         text = f"{content.title} {(content.body or '')[:500]} {' '.join(content.concepts or [])}"
         
         # Generate embedding
-        embedding = model.encode(text, convert_to_tensor=False)
+        embedding = model.encode(text, convert_to_tensor=False).tolist()
         
-        # TODO: Store in Qdrant
-        # from qdrant_client import QdrantClient
-        # client = QdrantClient(":memory:")
-        # client.upsert(collection_name="content", points=[...])
+        client = get_qdrant_client()
         
-        logger.info(f"Embedding generated for content {content.id} ({len(embedding)} dims)")
-        content.embedding_id = f"emb_{content.id}"  # Placeholder
+        # We need a UUID for Qdrant. Let's create a deterministic one from the SQLite string ID or just generate one and save to db.
+        # SQLite content.id is an integer or string depending on model. Assuming int/string.
+        point_id = str(uuid.uuid4())
+        
+        client.upsert(
+            collection_name=CONTENT_COLLECTION,
+            points=[
+                PointStruct(
+                    id=point_id,
+                    vector=embedding,
+                    payload={"content_id": content.id, "domain": content.domain}
+                )
+            ]
+        )
+        
+        logger.info(f"Embedding generated and stored for content {content.id}")
+        content.embedding_id = point_id
         
     except Exception as e:
         logger.warning(f"Embedding generation failed: {e}")
@@ -207,13 +221,14 @@ async def update_cognitive_profile_from_session(
     )
     
     # Update composite cognitive index
-    profile.cognitive_index = (
-        profile.working_memory * 0.25 +
-        profile.processing_speed * 0.25 +
-        profile.attention_control * 0.20 +
-        profile.spatial_reasoning * 0.10 +
-        profile.creativity * 0.10 +
-        profile.emotional_regulation * 0.10
+    from learning.algorithms import calculate_cognitive_index
+    profile.cognitive_index = calculate_cognitive_index(
+        working_memory=profile.working_memory,
+        attention=profile.attention_control,
+        processing_speed=profile.processing_speed,
+        logical_reasoning=profile.spatial_reasoning, # Assuming spatial mapping to logical for MVP
+        creativity=profile.creativity,
+        emotional_regulation=profile.emotional_regulation
     )
     
     profile.last_assessed = datetime.now(timezone.utc)
@@ -492,8 +507,14 @@ async def seed_db(db: AsyncSession) -> int:
             like_count=2
         )
         content.estimated_learning_value = 0.5 + (content.difficulty_level / 20)
-        content.embedding_id = f"emb_{content.id}"  # Placeholder
         db.add(content)
+        await db.flush() # Need ID before generating embedding
+        
+        # Generate real embedding directly into local Qdrant
+        try:
+            await _generate_embedding(content)
+        except Exception as e:
+            logger.error(f"Failed to generate embedding for {content.title}: {e}")
 
     await db.commit()
     logger.info("✅ Seeding completed successfully!")

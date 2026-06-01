@@ -63,15 +63,25 @@ class MatchmakingEngine:
             content.concepts, engagement_history
         )
         
-        match_score = (
-            0.30 * cognitive_fit +
-            0.25 * learning_value_fit +
-            0.20 * engagement_potential +
-            0.15 * social_proof +
-            0.10 * sr_urgency
+        from learning.algorithms import calculate_feed_score
+        
+        # Determine Addiction Penalty (e.g., if user has watched too much without high mastery)
+        # Using a simple heuristic for MVP: if avg mastery is low but they watch a lot, apply penalty
+        addiction_penalty = 0.0
+        avg_mastery = engagement_history.get("average_concept_mastery", 0.5)
+        if avg_mastery < 0.4:
+            addiction_penalty = 0.2
+            
+        match_score = calculate_feed_score(
+            engagement_score=engagement_potential,
+            educational_quality=learning_value_fit,
+            recall_improvement=sr_urgency,
+            topic_novelty=1.0 - engagement_history.get("average_concept_mastery", 0.5),
+            skill_progression=cognitive_fit,
+            addiction_penalty=addiction_penalty
         )
         
-        return max(0.0, min(1.0, match_score))  # Clamp to [0, 1]
+        return match_score
 
     @staticmethod
     def _cognitive_fit_score(user_profile: Dict[str, Any], content_difficulty: int) -> float:

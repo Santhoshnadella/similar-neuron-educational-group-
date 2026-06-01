@@ -16,51 +16,7 @@ const TABS = [
   { key: "following",    label: "👥 Following", icon: Users },
 ];
 
-// Mock seed data for MVP demo when backend isn't running
-const MOCK_FEED: FeedItem[] = [
-  {
-    id: "1", title: "The Feynman Technique: Learn Anything 10x Faster",
-    type: "reel", domain: "Learning Science", creator_id: "demo",
-    body: "Richard Feynman, Nobel Prize-winning physicist, developed a learning method that forces true understanding. The secret: if you can't explain it simply, you don't understand it yet.\n\nStep 1: Choose a concept. Step 2: Teach it to a child. Step 3: Identify gaps. Step 4: Simplify and use analogies.",
-    difficulty_level: 2, estimated_learning_value: 0.92, engagement_score: 0.88,
-    view_count: 47823, like_count: 3241, concepts: ["Meta-learning", "Cognition", "Memory"],
-    quiz_questions: [
-      { id: "q1", question: "What is the core principle of the Feynman Technique?", options: ["Memorize everything", "Explain simply to find gaps", "Read textbooks repeatedly", "Take detailed notes"], correct_index: 1, explanation: "Feynman believed true understanding requires being able to explain a concept in the simplest terms.", concept: "Meta-learning" }
-    ],
-    learning_objective: "Master the Feynman learning technique", created_at: new Date().toISOString(),
-  },
-  {
-    id: "2", title: "Neural Networks: The Brain-Inspired Revolution",
-    type: "reel", domain: "AI & Machine Learning", creator_id: "demo",
-    body: "Deep learning mimics the brain's neural architecture. A single neuron: receives inputs, applies weights, adds bias, passes through activation function. Stack millions — you get intelligence.\n\nThe real magic? Backpropagation: credit assignment across layers via gradient descent. Every mistake teaches the network something.",
-    difficulty_level: 6, estimated_learning_value: 0.89, engagement_score: 0.82,
-    view_count: 31204, like_count: 2109, concepts: ["Deep Learning", "Backpropagation", "Gradient Descent"],
-    quiz_questions: [
-      { id: "q2", question: "What does backpropagation do in a neural network?", options: ["Initializes weights randomly", "Propagates gradients backward to update weights", "Normalizes input data", "Selects the architecture"], correct_index: 1, explanation: "Backpropagation computes gradients of the loss with respect to weights, enabling learning.", concept: "Deep Learning" }
-    ],
-    learning_objective: "Understand how neural networks learn", created_at: new Date().toISOString(),
-  },
-  {
-    id: "3", title: "Spaced Repetition: The Science of Never Forgetting",
-    type: "reel", domain: "Cognitive Science", creator_id: "demo",
-    body: "Hermann Ebbinghaus discovered the forgetting curve in 1885. Without review, you forget 70% within 24 hours. Spaced repetition defeats this by reviewing information at precise intervals.\n\nThe FSRS algorithm (used in Anki) predicts exactly when you'll forget something and schedules review at the optimal moment — just before forgetting.",
-    difficulty_level: 3, estimated_learning_value: 0.95, engagement_score: 0.91,
-    view_count: 58901, like_count: 4782, concepts: ["Spaced Repetition", "Forgetting Curve", "FSRS"],
-    quiz_questions: [
-      { id: "q3", question: "What percentage of information is forgotten within 24 hours without review?", options: ["30%", "50%", "70%", "90%"], correct_index: 2, explanation: "Ebbinghaus's experiments showed ~70% forgetting rate within 24 hours without active review.", concept: "Memory Science" }
-    ],
-    learning_objective: "Apply spaced repetition for long-term memory", created_at: new Date().toISOString(),
-  },
-  {
-    id: "4", title: "Systems Thinking: See the Whole, Change Everything",
-    type: "reel", domain: "Systems & Strategy", creator_id: "demo",
-    body: "Most problems aren't problems — they're symptoms. Systems thinking teaches you to find the causal loops, feedback mechanisms, and leverage points that drive complex behavior.\n\nKey insight: the solution to a problem is often counterintuitive. Pushing harder in the wrong place makes systems worse.",
-    difficulty_level: 5, estimated_learning_value: 0.87, engagement_score: 0.79,
-    view_count: 22341, like_count: 1876, concepts: ["Systems Thinking", "Feedback Loops", "Mental Models"],
-    quiz_questions: [],
-    learning_objective: "Apply systems thinking to complex problems", created_at: new Date().toISOString(),
-  },
-];
+
 
 export default function FeedPage() {
   const { isAuthenticated } = useAuthStore();
@@ -84,10 +40,10 @@ export default function FeedPage() {
       else if (activeTab === "trending") data = await feedApi.trending();
       else data = await feedApi.following();
 
-      setItems(data.items.length > 0 ? data.items : MOCK_FEED);
+      setItems(data.items);
     } catch {
-      // Backend not running — show mock data
-      setItems(MOCK_FEED);
+      setError("Failed to load feed. Please try again.");
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -97,8 +53,14 @@ export default function FeedPage() {
     <div className="app-layout">
       <Sidebar />
 
-      <main className="main-content">
-        <div className="feed-container">
+      <main className="main-content" style={{ overflow: "hidden" }}>
+        <div className="feed-container" style={{ 
+          height: "calc(100vh - 120px)", 
+          overflowY: "scroll", 
+          scrollSnapType: "y mandatory",
+          paddingRight: 10,
+          paddingBottom: 60
+        }}>
           {/* Header */}
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>
@@ -135,6 +97,12 @@ export default function FeedPage() {
               <RefreshCw size={14} /> Refresh
             </button>
           </div>
+
+          {error && (
+            <div style={{ padding: 16, backgroundColor: "rgba(255, 50, 50, 0.1)", color: "#ff4d4d", borderRadius: 8, marginBottom: 16, textAlign: "center" }}>
+              {error}
+            </div>
+          )}
 
           {/* Content */}
           {loading ? (

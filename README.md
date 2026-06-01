@@ -10,17 +10,17 @@ Welcome to the KnowledgeVerse Local MVP! This repository has been streamlined to
 
 ## 1. Setup Local AI (LM Studio)
 
-We use **LM Studio** as our primary AI engine for privacy and zero cost.
+We use **LM Studio** as our primary AI engine for zero latency, maximum privacy, and zero API costs. The system relies on it for the Tutor Agent, Voice generation, AR object generation, and Research Copilot.
 
 1. Download and install [LM Studio](https://lmstudio.ai/).
 2. Search for and download the **Gemma 4 E2B** model (specifically `google/gemma-2-4b-it` or a similar quantization).
 3. Go to the **Local Server** tab (the double arrow icon `<->` on the left).
 4. Select the downloaded Gemma model from the top dropdown.
-5. Click **Start Server** (it should run on port `1234` by default).
+5. Click **Start Server** (it MUST run on port `1234` for the backend to connect).
 
-## 2. Setup the Backend (FastAPI)
+## 2. Setup the Backend (FastAPI + Qdrant + SQLite)
 
-The backend uses FastAPI and stores all data in a local SQLite file (`knowledgeverse.db`).
+The backend uses FastAPI. It uses **SQLite** (`knowledgeverse.db`) for relational data (users, progress, achievements) and a local **Qdrant** instance (running entirely in-memory/on-disk via `qdrant-client`) for vector embeddings.
 
 1. Open a terminal and navigate to the `backend` directory:
    ```bash
@@ -38,15 +38,28 @@ The backend uses FastAPI and stores all data in a local SQLite file (`knowledgev
    ```bash
    pip install -r requirements.txt
    ```
-4. Start the backend server:
+4. **Seed the Database (CRITICAL FIRST STEP)**:
+   This will create the SQLite tables, configure the Qdrant collections, and generate real semantic vector embeddings for all curriculum topics:
+   ```bash
+   python seed.py
+   ```
+5. Start the backend server:
    ```bash
    uvicorn main:app --reload
    ```
    The backend will now be running at `http://127.0.0.1:8000`.
 
-## 3. Setup the Frontend (Next.js)
+## 3. Verify the Algorithms (Optional)
 
-The frontend is a Next.js application.
+We have an automated test suite to mathematically verify the core platform mechanics (Cognitive Index and Addiction Penalties).
+While in the `backend` directory with the virtual environment activated, run:
+```bash
+python test_algorithms.py
+```
+
+## 4. Setup the Frontend (Next.js)
+
+The frontend is a Next.js application using React Flow for the knowledge graph.
 
 1. Open a new terminal and navigate to the `frontend` directory:
    ```bash
@@ -61,6 +74,12 @@ The frontend is a Next.js application.
    npm run dev
    ```
    The frontend will now be running at `http://localhost:3000`.
+
+## 5. Testing the Un-Mocked Features
+- **Deep Work Mode**: Click the floating "Focus Mode" button in the bottom right corner of the screen.
+- **Knowledge Graph**: Go to the `/explore` page, search for a topic (e.g., "Machine Learning"), and watch React Flow dynamically render the NetworkX graph.
+- **Gamification**: Go to your Profile to see real achievements and active guilds fetched dynamically from SQLite.
+- **Addiction Penalty**: Watch a Feed topic for a long period, fail the quiz, and observe its Feed Score plummet.
 
 ## Features Available in MVP
 - **Local AI Tutor:** Engage with the AI tutor routed seamlessly to your local LM Studio instance.

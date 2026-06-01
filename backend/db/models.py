@@ -216,3 +216,23 @@ class Achievement(Base):
     icon = Column(String(100), nullable=True)
     xp_reward = Column(Integer, default=0)
     unlocked_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# ─── Community (Guilds & Debates) ────────────────────────────────
+
+class Guild(Base):
+    __tablename__ = "guilds"
+    
+    id = Column(String, primary_key=True, default=gen_uuid)
+    name = Column(String(200), unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Debate(Base):
+    __tablename__ = "debates"
+    
+    id = Column(String, primary_key=True, default=gen_uuid)
+    topic = Column(String(500), nullable=False)
+    status = Column(String(50), default="active")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

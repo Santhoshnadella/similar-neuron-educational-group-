@@ -31,19 +31,7 @@ export default function RoadmapPage() {
       setRoadmap(data);
       setCompletedNodes(new Set());
     } catch {
-      // Mock fallback
-      setRoadmap({
-        topic, level,
-        nodes: [
-          { id: "1", title: `Introduction to ${topic}`, description: "Core concepts and mental models", difficulty: 2, estimated_hours: 3, prerequisites: [], is_core: true },
-          { id: "2", title: `Fundamentals of ${topic}`, description: "Essential building blocks", difficulty: 4, estimated_hours: 5, prerequisites: ["Introduction"], is_core: true },
-          { id: "3", title: `${topic} in Practice`, description: "Hands-on projects and applications", difficulty: 6, estimated_hours: 8, prerequisites: ["Fundamentals"], is_core: true },
-          { id: "4", title: `Advanced ${topic}`, description: "Deep dives and edge cases", difficulty: 8, estimated_hours: 10, prerequisites: ["Practice"], is_core: false },
-          { id: "5", title: `${topic} Mastery`, description: "Expert-level understanding and teaching others", difficulty: 9, estimated_hours: 12, prerequisites: ["Advanced"], is_core: false },
-        ],
-        estimated_total_hours: 38,
-        pareto_path: [`Introduction to ${topic}`, `Fundamentals of ${topic}`, `${topic} in Practice`],
-      });
+      alert("Failed to generate roadmap. Please check if the local AI engine is running.");
     } finally { setLoading(false); }
   };
 

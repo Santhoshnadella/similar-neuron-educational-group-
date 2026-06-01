@@ -9,6 +9,53 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuthStore } from "@/store/authStore";
 import { conceptsApi, aiApi, type ConceptMap, type RoadmapResponse } from "@/lib/api";
 import { Search, MapPin, Network, Loader2, ChevronRight, Clock, Zap } from "lucide-react";
+import ReactFlow, { MiniMap, Controls, Background, Node, Edge, MarkerType } from "reactflow";
+import "reactflow/dist/style.css";
+
+function ReactFlowGraph({ conceptMap }: { conceptMap: ConceptMap }) {
+  const nodes: Node[] = conceptMap.nodes.map(n => ({
+    id: n.id,
+    position: { x: n.x * 200, y: n.y * 200 },
+    data: { label: n.label },
+    style: {
+      background: n.type === 'root' ? "var(--kv-accent-violet)" : "var(--kv-bg-secondary)",
+      color: n.type === 'root' ? "#fff" : "var(--kv-text-primary)",
+      border: `2px solid ${n.type === 'root' ? "var(--kv-accent-violet)" : "var(--kv-border)"}`,
+      borderRadius: 8,
+      padding: "10px 20px",
+      fontWeight: n.type === 'root' ? "bold" : "normal",
+      boxShadow: n.type === 'root' ? "0 0 20px rgba(124,58,237,0.4)" : "none",
+      transition: "all 0.2s ease-in-out",
+      cursor: "pointer"
+    },
+    className: "concept-node"
+  }));
+
+  const edges: Edge[] = conceptMap.edges.map((e, i) => ({
+    id: `e${i}-${e.source}-${e.target}`,
+    source: e.source,
+    target: e.target,
+    animated: true,
+    style: { stroke: 'var(--kv-accent-cyan)', strokeWidth: 2 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: 'var(--kv-accent-cyan)',
+    },
+  }));
+
+  return (
+    <ReactFlow nodes={nodes} edges={edges} fitView attributionPosition="bottom-left" minZoom={0.1} maxZoom={2}>
+      <Controls style={{ background: "var(--kv-bg-secondary)", border: "1px solid var(--kv-border)" }} />
+      <MiniMap 
+        nodeStrokeColor={(n) => n.style?.background === 'var(--kv-accent-violet)' ? '#7c3aed' : '#334155'}
+        nodeColor={(n) => n.style?.background === 'var(--kv-accent-violet)' ? '#7c3aed' : '#1e293b'}
+        maskColor="rgba(0, 0, 0, 0.7)"
+        style={{ background: "var(--kv-bg-secondary)", border: "1px solid var(--kv-border)" }}
+      />
+      <Background color="#334155" gap={20} size={1} />
+    </ReactFlow>
+  );
+}
 
 export default function ExplorePage() {
   const { isAuthenticated } = useAuthStore();
@@ -28,34 +75,22 @@ export default function ExplorePage() {
     setLoading(true);
     try {
       if (activeTab === "graph") {
-        const data = await conceptsApi.map(topic).catch(() => ({
-          topic, nodes: [
-            { id: "1", label: topic, type: "root", x: 300, y: 200 },
-            { id: "2", label: `Foundations of ${topic}`, type: "concept", x: 120, y: 100 },
-            { id: "3", label: `Core Principles`, type: "concept", x: 300, y: 80 },
-            { id: "4", label: `Advanced ${topic}`, type: "concept", x: 480, y: 100 },
-            { id: "5", label: `Applications`, type: "concept", x: 150, y: 300 },
-            { id: "6", label: `Best Practices`, type: "concept", x: 450, y: 300 },
-          ],
-          edges: [
-            { source: "1", target: "2" }, { source: "1", target: "3" }, { source: "1", target: "4" },
-            { source: "2", target: "5" }, { source: "3", target: "5" }, { source: "3", target: "6" }, { source: "4", target: "6" },
-          ],
-        }));
+        const data = await conceptsApi.map(topic);
         setConceptMap(data);
       } else {
         const data = await aiApi.roadmap({ topic, level: "intermediate" });
         setRoadmap(data);
       }
-    } catch (e) {}
-    finally { setLoading(false); }
+    } catch (e) {
+      console.error(e);
+    } finally { setLoading(false); }
   };
 
   return (
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", height: "100%", display: "flex", flexDirection: "column" }}>
           {/* Header */}
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>
@@ -104,42 +139,16 @@ export default function ExplorePage() {
 
           {/* Concept Map */}
           {activeTab === "graph" && (
-            <div className="graph-container" style={{ position: "relative", overflow: "hidden" }}>
+            <div className="graph-container" style={{ position: "relative", overflow: "hidden", flex: 1, minHeight: 400 }}>
               {!conceptMap ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 16 }}>
                   <div style={{ fontSize: 48 }}>🗺️</div>
                   <p style={{ color: "var(--kv-text-muted)" }}>Enter a topic above to visualize its knowledge graph</p>
                 </div>
               ) : (
-                <svg width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
-                  {/* Edges */}
-                  {conceptMap.edges.map((e, i) => {
-                    const src = conceptMap.nodes.find(n => n.id === e.source);
-                    const tgt = conceptMap.nodes.find(n => n.id === e.target);
-                    if (!src || !tgt) return null;
-                    return (
-                      <line key={i}
-                        x1={src.x} y1={src.y} x2={tgt.x} y2={tgt.y}
-                        stroke="rgba(124,58,237,0.3)" strokeWidth={1.5} strokeDasharray="4 3"
-                      />
-                    );
-                  })}
-                  {/* Nodes */}
-                  {conceptMap.nodes.map((node) => (
-                    <g key={node.id}>
-                      <circle
-                        cx={node.x} cy={node.y}
-                        r={node.type === "root" ? 36 : 28}
-                        fill={node.type === "root" ? "rgba(124,58,237,0.2)" : "rgba(6,182,212,0.1)"}
-                        stroke={node.type === "root" ? "var(--kv-accent-violet)" : "rgba(6,182,212,0.4)"}
-                        strokeWidth={2}
-                      />
-                      <text x={node.x} y={node.y + 4} textAnchor="middle" fill="var(--kv-text-primary)" fontSize={node.type === "root" ? 11 : 10} fontWeight={node.type === "root" ? 700 : 500}>
-                        {node.label.length > 12 ? node.label.slice(0, 12) + "…" : node.label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
+                <div style={{ width: "100%", height: "100%", background: "var(--kv-bg-primary)" }}>
+                  <ReactFlowGraph conceptMap={conceptMap} />
+                </div>
               )}
             </div>
           )}
@@ -220,7 +229,15 @@ export default function ExplorePage() {
         </div>
       </main>
       <BottomNav />
-      <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
+      <style>{`
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        .concept-node:hover {
+          transform: scale(1.05) !important;
+          box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3) !important;
+          border-color: var(--kv-accent-violet) !important;
+          z-index: 1000;
+        }
+      `}</style>
     </div>
   );
 }

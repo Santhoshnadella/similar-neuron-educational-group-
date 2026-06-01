@@ -27,6 +27,17 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("✅ Database tables ready")
+    
+    # Init Qdrant
+    from db.qdrant import init_qdrant
+    init_qdrant()
+    
+    # Build Knowledge Graph
+    from graphs.service import build_graph_from_db
+    async with engine.begin() as conn:
+        from db.database import AsyncSessionLocal
+        async with AsyncSessionLocal() as session:
+            await build_graph_from_db(session)
     yield
     logger.info("🛑 KnowledgeVerse API shutting down...")
 

@@ -93,8 +93,17 @@ async def voice_tutor(
     prompt: str,
     current_user: User = Depends(get_current_user),
 ):
-    """Phase 4: Voice Tutoring Stub (Gemma 4 Orchestration)"""
-    return {"status": "ok", "message": "Voice processing orchestrated by Gemma 4", "audio_url": "mock.mp3"}
+    """Phase 4: Voice Tutoring (Gemma 4 Orchestration)"""
+    from agents.ai_client import ai_client
+    if await ai_client.is_available():
+        messages = [
+            {"role": "system", "content": "You are a voice tutor. Generate a highly expressive, concise spoken script for the following prompt. Use SSML tags for pauses and emphasis."},
+            {"role": "user", "content": prompt}
+        ]
+        script = await ai_client.chat(messages, temperature=0.7)
+        return {"status": "ok", "message": "Voice processing orchestrated by Groq", "script": script}
+    else:
+        raise HTTPException(status_code=503, detail="Voice orchestrator (Gemma) offline.")
 
 
 @router.post("/ar-visualize")
@@ -102,8 +111,28 @@ async def ar_visualize(
     concept: str,
     current_user: User = Depends(get_current_user),
 ):
-    """Phase 4: AR/VR Spatial Concept Generation Stub"""
-    return {"status": "ok", "concept": concept, "model_url": "mock.obj", "orchestrator": "Gemma 4"}
+    """Phase 4: AR/VR Spatial Concept Generation"""
+    from agents.ai_client import ai_client
+    import json
+    
+    if await ai_client.is_available():
+        messages = [
+            {"role": "system", "content": "You are a spatial visualization agent. Return ONLY a JSON object describing a basic 3D scene (geometries, positions, colors) for the given concept."},
+            {"role": "user", "content": f"Visualize this concept in 3D: {concept}"}
+        ]
+        raw = await ai_client.chat(messages, temperature=0.5)
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        try:
+            scene_data = json.loads(raw.strip())
+        except:
+            scene_data = {"error": "Failed to parse JSON scene"}
+            
+        return {"status": "ok", "concept": concept, "scene": scene_data, "orchestrator": "Groq"}
+    else:
+        raise HTTPException(status_code=503, detail="AR/VR orchestrator offline.")
 
 
 # ─── Unified Chat Endpoint (uses Agent Router + Gemma 4 E2B) ─────
@@ -127,7 +156,7 @@ async def unified_chat(
 
     Supports streaming (set stream=true for token-by-token SSE).
     """
-    from agents.lm_studio import agent_router, lm_studio
+    from agents.ai_client import agent_router, ai_client
 
     if request.stream:
         async def event_stream():
@@ -140,7 +169,7 @@ async def unified_chat(
             messages.append({"role": "user", "content": request.message})
 
             try:
-                async for chunk in lm_studio.stream_chat(messages=messages, temperature=0.7):
+                async for chunk in ai_client.stream_chat(messages=messages, temperature=0.7):
                     yield f"data: {json.dumps({'delta': chunk})}\n\n"
                 yield "data: [DONE]\n\n"
             except Exception as e:
@@ -162,18 +191,34 @@ async def lm_studio_status():
     Check LM Studio connection and list available models.
     Useful to verify Gemma 4 E2B is loaded and running.
     """
-    from agents.lm_studio import lm_studio
-    available = await lm_studio.is_available()
-    models = await lm_studio.list_models() if available else []
+    from agents.ai_client import ai_client
+    available = await ai_client.is_available()
+    models = await ai_client.list_models() if available else []
     return {
-        "lm_studio": {
+        "ai_status": {
             "available": available,
-            "url": lm_studio.base_url,
-            "current_model": lm_studio.model,
+            "current_model": ai_client.model,
             "loaded_models": [m.get("id") for m in models],
         },
         "message": (
-            f"✅ LM Studio running with {len(models)} model(s)" if available
-            else "⚠️ LM Studio not detected. Open LM Studio → Local Server → Start Server"
+            f"✅ Groq API running with {len(models)} model(s)" if available
+            else "⚠️ Groq API not detected."
         ),
     }
+
+
+@router.get("/memory/due")
+async def get_due_memory_items(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Phase 2: Get spaced repetition items due for review"""
+    from agents.memory_agent import get_due_items
+    from datetime import datetime, timedelta
+    
+    # Mocking fetching user items from DB for now
+    mock_user_items = [
+        {"id": "topic-1", "concept": "Neural Networks", "next_review_date": datetime.utcnow() - timedelta(days=1)}
+    ]
+    due = get_due_items(mock_user_items)
+    return {"status": "ok", "due_items": due}

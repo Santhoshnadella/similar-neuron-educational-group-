@@ -146,6 +146,22 @@ export const aiApi = {
 export const usersApi = {
   me: () => request<User>("/users/me"),
   profile: (username: string) => request<User>(`/users/${username}`),
+  achievements: () => request<{ achievements: Achievement[] }>("/users/me/achievements"),
+};
+
+// ─── Community ─────────────────────────────────────────────────
+export const communityApi = {
+  guilds: () => request<{ guilds: Guild[] }>("/community/guilds"),
+  debates: () => request<{ debates: Debate[] }>("/community/debates"),
+};
+
+// ─── Learning ──────────────────────────────────────────────────
+export const learningApi = {
+  startDeepWork: (durationMinutes: number = 60, topicId?: string) =>
+    request<{ status: string; session_id: string; message: string }>("/learning/session/deep-work", {
+      method: "POST",
+      body: JSON.stringify({ duration_minutes: durationMinutes, topic_id: topicId })
+    }),
 };
 
 // ─── Concepts / Knowledge Graph ────────────────────────────────
@@ -307,3 +323,22 @@ export interface ConceptMap {
 }
 
 export interface Concept { id: string; name: string; domain?: string; difficulty: number; }
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  unlocked: boolean;
+}
+
+export interface Guild {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Debate {
+  id: string;
+  topic: string;
+  status: string;
+}
