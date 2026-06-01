@@ -56,8 +56,8 @@ export function Sidebar() {
             }}>
               {user.username[0].toUpperCase()}
             </div>
-            <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--kv-text-primary)", truncate: "ellipsis" }}>
+            <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--kv-text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {user.username}
               </div>
               <div style={{ fontSize: 11, color: "var(--kv-text-muted)" }}>

@@ -121,9 +121,11 @@ export function TutorChat() {
               </div>
               <div className={`message-bubble ${msg.role}`} style={{ overflowX: "auto" }}>
                 {msg.role === "assistant" ? (
-                  <ReactMarkdown className="prose prose-invert max-w-none text-[14px]">
-                    {msg.content}
-                  </ReactMarkdown>
+                  <div className="prose prose-invert max-w-none text-[14px]">
+                    <ReactMarkdown>
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
                 ) : (
                   <span style={{ whiteSpace: "pre-wrap" }}>{msg.content}</span>
                 )}
