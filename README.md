@@ -1,26 +1,17 @@
-# KnowledgeVerse (Local MVP)
+# KnowledgeVerse
 
-Welcome to the KnowledgeVerse Local MVP! This repository has been streamlined to run entirely on your local machine with zero complex infrastructure setup. We rely on **SQLite** for the database and **LM Studio** for local AI inference, meaning you don't need Docker, cloud API keys, or heavy database installations (like PostgreSQL, Redis, or Neo4j) to get started.
+Welcome to **KnowledgeVerse**! An AI-native educational social network + adaptive LMS + cognitive operating system.
 
-## Prerequisites
+We have officially transitioned from a local MVP to a full-stack, cloud-native architecture. The platform now utilizes **Neon Serverless PostgreSQL** for dynamic data persistence, **Vercel** for frontend delivery, **Render** for the Python backend, and **Groq** for ultra-fast cloud AI inference. 
 
-- Node.js (for the frontend)
-- Python 3.10+ (for the backend)
-- [LM Studio](https://lmstudio.ai/) (for local AI inference)
+## Tech Stack Overview
+- **Frontend:** Next.js (React), Clerk (Authentication), Framer Motion, React Flow
+- **Backend:** FastAPI (Python), SQLAlchemy (Async), Pydantic
+- **Database:** Neon Serverless PostgreSQL
+- **Vector Search (In-Progress):** Qdrant
+- **AI Inference:** Groq API (Llama 3) / Local LLM Fallback (LM Studio)
 
-## 1. Setup Local AI (LM Studio)
-
-We use **LM Studio** as our primary AI engine for zero latency, maximum privacy, and zero API costs. The system relies on it for the Tutor Agent, Voice generation, AR object generation, and Research Copilot.
-
-1. Download and install [LM Studio](https://lmstudio.ai/).
-2. Search for and download the **Gemma 4 E2B** model (specifically `google/gemma-2-4b-it` or a similar quantization).
-3. Go to the **Local Server** tab (the double arrow icon `<->` on the left).
-4. Select the downloaded Gemma model from the top dropdown.
-5. Click **Start Server** (it MUST run on port `1234` for the backend to connect).
-
-## 2. Setup the Backend (FastAPI + Qdrant + SQLite)
-
-The backend uses FastAPI. It uses **SQLite** (`knowledgeverse.db`) for relational data (users, progress, achievements) and a local **Qdrant** instance (running entirely in-memory/on-disk via `qdrant-client`) for vector embeddings.
+## 1. Setup the Backend (FastAPI)
 
 1. Open a terminal and navigate to the `backend` directory:
    ```bash
@@ -38,55 +29,48 @@ The backend uses FastAPI. It uses **SQLite** (`knowledgeverse.db`) for relationa
    ```bash
    pip install -r requirements.txt
    ```
-4. **Seed the Database (CRITICAL FIRST STEP)**:
-   This will create the SQLite tables, configure the Qdrant collections, and generate real semantic vector embeddings for all curriculum topics:
-   ```bash
-   python seed.py
+4. Set up your `.env` file in the root of the project with your cloud API keys:
+   ```env
+   DATABASE_URL="postgresql+asyncpg://<user>:<password>@<host>/neondb?ssl=require"
+   GROQ_API_KEY="your-groq-api-key"
+   APP_SECRET_KEY="your-random-secure-string"
+   JWT_SECRET="your-random-jwt-string"
    ```
-5. Start the backend server:
+5. **Seed the Database**:
+   This will create the PostgreSQL tables and generate initial curriculum data:
+   ```bash
+   python seed_production.py
+   ```
+6. Start the backend server:
    ```bash
    uvicorn main:app --reload
    ```
    The backend will now be running at `http://127.0.0.1:8000`.
 
-## 3. Verify the Algorithms (Optional)
-
-We have an automated test suite to mathematically verify the core platform mechanics (Cognitive Index and Addiction Penalties).
-While in the `backend` directory with the virtual environment activated, run:
-```bash
-python test_algorithms.py
-```
-
-## 4. Setup the Frontend (Next.js)
-
-The frontend is a Next.js application using React Flow for the knowledge graph.
+## 2. Setup the Frontend (Next.js)
 
 1. Open a new terminal and navigate to the `frontend` directory:
    ```bash
    cd frontend
    ```
-2. Install the Node dependencies:
+2. Set up the frontend environment variables in `.env`:
+   ```env
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-pub-key"
+   CLERK_SECRET_KEY="your-clerk-secret-key"
+   NEXT_PUBLIC_API_URL="http://127.0.0.1:8000"
+   ```
+3. Install the Node dependencies:
    ```bash
    npm install
    ```
-3. Start the development server:
+4. Start the development server:
    ```bash
    npm run dev
    ```
    The frontend will now be running at `http://localhost:3000`.
 
-## 5. Testing the Un-Mocked Features
-- **Deep Work Mode**: Click the floating "Focus Mode" button in the bottom right corner of the screen.
-- **Knowledge Graph**: Go to the `/explore` page, search for a topic (e.g., "Machine Learning"), and watch React Flow dynamically render the NetworkX graph.
-- **Gamification**: Go to your Profile to see real achievements and active guilds fetched dynamically from SQLite.
-- **Addiction Penalty**: Watch a Feed topic for a long period, fail the quiz, and observe its Feed Score plummet.
-
-## Features Available in MVP
-- **Local AI Tutor:** Engage with the AI tutor routed seamlessly to your local LM Studio instance.
-- **Concept Maps:** The UI provides a mock implementation of the knowledge graph (bypassing Neo4j) to visualize learning topics.
-- **Data Persistence:** All learning progress is saved locally to your SQLite database.
-
 ---
+
 
 ## Our Moat: The KnowledgeVerse Vision
 
