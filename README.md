@@ -197,3 +197,46 @@ CognitiveIndex = (
 
 ### FINAL OBJECTIVE
 Build a learning operating system, an educational social network, a cognitive augmentation platform, a human potential ecosystem, and a knowledge civilization infrastructure that combines neuroscience, AI, systems thinking, classical education, cognitive science, social learning, creativity, and deep understanding into one unified platform.
+
+---
+
+## Contributing & Coding Standards
+
+We welcome contributions to the KnowledgeVerse ecosystem! If you are interested in submitting code, please review our standards to ensure a clean, maintainable, and high-quality codebase.
+
+### 1. Code Architecture & Style
+- **Frontend (Next.js/React):**
+  - Use **functional components** and React Hooks.
+  - Strict **TypeScript** typing is required for all new components, state, and API responses.
+  - Follow the established **KnowledgeVerse Design System** (use `var(--kv-...)` CSS variables for colors, spacing, and borders). Avoid hardcoded hex colors.
+- **Backend (FastAPI/Python):**
+  - Use **Pydantic models** (`schemas.py`) for all request/response validation.
+  - All database interactions must use **SQLAlchemy AsyncSessions**. Do not use raw SQL.
+  - Keep route handlers thin. All core business and AI logic should live in the respective `service.py` files.
+
+### 2. Commit Message Template
+Please format your commit messages using the following standard to keep the Git history readable:
+```text
+[Type]: [Short summary of changes]
+
+[Detailed description of why this change was made, what it fixes, or the logic behind it]
+
+Related Issues: #[Issue Number]
+```
+**Types:** 
+- `feat` (new feature)
+- `fix` (bug fix)
+- `docs` (documentation)
+- `style` (UI formatting/CSS)
+- `refactor` (code restructuring without changing behavior)
+- `chore` (maintenance, dependencies)
+
+### 3. Pull Request (PR) Checklist
+Before submitting a Pull Request, please ensure you have verified the following:
+- [ ] **Tests Passed:** I have tested my changes locally and verified they do not break existing features.
+- [ ] **No Secrets Exposed:** I have verified that no API keys, tokens, or passwords are hardcoded.
+- [ ] **Type Safety:** All new TypeScript and Python code has strict type annotations.
+- [ ] **Documentation:** I have updated the README or inline docstrings if my changes affect the system's architecture.
+
+### 4. Setting up for Development
+To get started with development, follow the Local Setup Guide at the top of this README. Ensure you test your changes with LM Studio running locally to verify the AI integration pipeline.
