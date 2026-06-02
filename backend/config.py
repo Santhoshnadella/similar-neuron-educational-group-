@@ -5,7 +5,7 @@ from typing import List
 class Settings(BaseSettings):
     APP_NAME: str = "KnowledgeVerse"
     APP_ENV: str = "development"
-    APP_SECRET_KEY: str = "dev-secret-key-change-in-production"
+    APP_SECRET_KEY: str
 
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./knowledgeverse.db"
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     LM_STUDIO_ENABLED: bool = False                # Set False to skip LM Studio
 
     # JWT
-    JWT_SECRET: str = "jwt-secret-key-minimum-32-characters-long!!"
+    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 10080  # 7 days
 
