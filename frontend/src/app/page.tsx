@@ -121,6 +121,162 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* MOAT & VISION SECTION */}
+        <section style={{ padding: "100px 0", borderTop: "1px solid var(--kv-border)" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2 style={{ fontSize: 42, fontWeight: 800, marginBottom: 16 }}>Our Moat: The KnowledgeVerse Vision</h2>
+            <p style={{ color: "var(--kv-text-muted)", fontSize: 18, maxWidth: 800, margin: "0 auto" }}>
+              An AI-native educational social network + adaptive LMS + cognitive operating system.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
+            
+            {/* Core Vision */}
+            <div className="glass-card" style={{ padding: 40 }}>
+              <h3 style={{ fontSize: 28, fontWeight: 800, marginBottom: 24, color: "white", display: "flex", alignItems: "center", gap: 12 }}>
+                <Sparkles color="var(--kv-accent-violet)" /> Core Vision
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}>
+                <div>
+                  <h4 style={{ color: "var(--kv-accent-cyan)", fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Combine the Best of:</h4>
+                  <ul style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.8, paddingLeft: 20 }}>
+                    <li><strong>Instagram/TikTok</strong> engagement</li>
+                    <li><strong>YouTube</strong> depth</li>
+                    <li><strong>Duolingo</strong> gamification</li>
+                    <li><strong>Notion</strong> knowledge systems</li>
+                    <li><strong>Khan Academy</strong> mastery learning</li>
+                    <li><strong>OpenAI-style</strong> AI tutoring</li>
+                    <li><strong>Cognitive science</strong> & adaptive learning</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 style={{ color: "var(--kv-accent-emerald)", fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Transforming:</h4>
+                  <ul style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.8, paddingLeft: 20 }}>
+                    <li>scrolling → <strong>learning</strong></li>
+                    <li>entertainment → <strong>cognitive growth</strong></li>
+                    <li>passive consumption → <strong>mastery</strong></li>
+                    <li>fragmented knowledge → <strong>connected intelligence</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Modules & Agents Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: 32 }}>
+              
+              <div className="glass-card" style={{ padding: 40 }}>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24, color: "white" }}>Primary Product Modules</h3>
+                <ul style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+                  <li><strong>Educational Social Feed:</strong> Short-form educational content.</li>
+                  <li><strong>AI Adaptive LMS:</strong> Personalized learning pathways.</li>
+                  <li><strong>Knowledge Graph Engine:</strong> Concept dependency mapping.</li>
+                  <li><strong>AI Agent Ecosystem:</strong> Specialized educational agents.</li>
+                  <li><strong>Cognitive Assessment Engine:</strong> Learner profiling.</li>
+                  <li><strong>Creator Studio:</strong> AI-assisted educational content creation.</li>
+                  <li><strong>Deep Learning Mode:</strong> Focus-first long-form mastery.</li>
+                  <li><strong>Gamified Skill Trees:</strong> Progression systems.</li>
+                  <li><strong>Community Layer:</strong> Debates, guilds, projects.</li>
+                  <li><strong>Human Optimization Dashboard:</strong> Memory, focus, cognition analytics.</li>
+                </ul>
+              </div>
+
+              <div className="glass-card" style={{ padding: 40 }}>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24, color: "white" }}>AI Agent Ecosystem</h3>
+                <ul style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                  <li><strong>Tutor Agent:</strong> Teaches concepts, adapts explanations, detects confusion across multiple modes (Beginner, Intermediate, Expert, Feynman, Story, Analogy).</li>
+                  <li><strong>Memory Agent:</strong> Handles spaced repetition, recall scheduling, and forgetting curve optimization (FSRS, SM2).</li>
+                  <li><strong>Socratic Agent:</strong> Asks reasoning questions and develops critical thinking.</li>
+                  <li><strong>Focus Coach Agent:</strong> Detects distraction, optimizes session timing, and recommends breaks.</li>
+                  <li><strong>Creativity Agent:</strong> Drives cross-domain idea synthesis and innovation exercises.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Engine Formulas */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: 32 }}>
+              <div className="glass-card" style={{ padding: 40 }}>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 16, color: "white" }}>Feed Ranking Logic & Recommendation Engine</h3>
+                <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, marginBottom: 16, lineHeight: 1.6 }}>
+                  <strong>Inputs:</strong> Watch time, replays, recall/quiz performance, curiosity patterns, session duration, focus quality, knowledge gaps, and goals.
+                </p>
+                <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, marginBottom: 16, lineHeight: 1.6 }}>
+                  <strong>Outputs:</strong> Personalized feed, learning roadmap, revision recommendations, and deep-learning suggestions.
+                </p>
+                <pre style={{ background: "rgba(0,0,0,0.3)", padding: 16, borderRadius: 12, color: "var(--kv-accent-cyan)", fontSize: 13, overflowX: "auto" }}>
+{`FeedScore = (
+  EngagementWeight * EngagementScore +
+  LearningValueWeight * EducationalQuality +
+  RetentionWeight * RecallImprovement +
+  CuriosityWeight * TopicNovelty +
+  MasteryWeight * SkillProgression
+) - AddictionPenalty`}
+                </pre>
+              </div>
+
+              <div className="glass-card" style={{ padding: 40 }}>
+                <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 16, color: "white" }}>Cognitive Assessment Engine</h3>
+                <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, marginBottom: 16, lineHeight: 1.6 }}>
+                  Evaluates Working Memory (n-back tests), Attention (continuous performance tasks), Spatial Reasoning (mental rotation), Processing Speed (timed pattern recognition), and Verbal Intelligence (semantic reasoning).
+                </p>
+                <pre style={{ background: "rgba(0,0,0,0.3)", padding: 16, borderRadius: 12, color: "var(--kv-accent-emerald)", fontSize: 13, overflowX: "auto", marginTop: 24 }}>
+{`CognitiveIndex = (
+  0.20 * WorkingMemory +
+  0.15 * Attention +
+  0.20 * ProcessingSpeed +
+  0.20 * LogicalReasoning +
+  0.15 * Creativity +
+  0.10 * EmotionalRegulation
+)`}
+                </pre>
+              </div>
+            </div>
+
+            {/* Content Schema */}
+            <div className="glass-card" style={{ padding: 40 }}>
+              <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24, color: "white" }}>Content Template & Upload Schema</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}>
+                <div>
+                  <h4 style={{ color: "white", fontSize: 16, marginBottom: 12 }}>Knowledge Reel Template:</h4>
+                  <ol style={{ color: "var(--kv-text-secondary)", fontSize: 14, paddingLeft: 20, lineHeight: 1.8 }}>
+                    <li><strong>Hook</strong> (Pattern interrupt)</li>
+                    <li><strong>Curiosity Gap</strong> (“What if…”)</li>
+                    <li><strong>Core Insight</strong> (Pareto concept)</li>
+                    <li><strong>Visualization</strong> (Diagram/animation)</li>
+                    <li><strong>Retrieval Prompt</strong> (Quick quiz)</li>
+                    <li><strong>CTA</strong> (Continue learning path)</li>
+                  </ol>
+                </div>
+                <div>
+                  <h4 style={{ color: "white", fontSize: 16, marginBottom: 12 }}>Creator JSON Schema:</h4>
+                  <pre style={{ background: "rgba(0,0,0,0.3)", padding: 16, borderRadius: 12, color: "var(--kv-accent-rose)", fontSize: 13, overflowX: "auto" }}>
+{`{
+  "title": "",
+  "domain": "",
+  "difficulty": 1,
+  "concepts": [],
+  "prerequisites": [],
+  "learning_objective": "",
+  "feynman_explanation": "",
+  "quiz_questions": [],
+  "references": []
+}`}
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+            {/* Final Objective */}
+            <div style={{ textAlign: "center", padding: "40px 20px" }}>
+              <h3 style={{ fontSize: 28, fontWeight: 900, marginBottom: 20, color: "white" }}>The Final Objective</h3>
+              <p style={{ color: "var(--kv-accent-violet)", fontSize: 20, lineHeight: 1.6, maxWidth: 900, margin: "0 auto", fontWeight: 500 }}>
+                Build a learning operating system, an educational social network, a cognitive augmentation platform, a human potential ecosystem, and a knowledge civilization infrastructure that combines neuroscience, AI, systems thinking, classical education, cognitive science, social learning, creativity, and deep understanding into one unified platform.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
         {/* FOUNDER & ECOSYSTEM SECTION */}
         <section style={{ padding: "100px 0", borderTop: "1px solid var(--kv-border)" }}>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
