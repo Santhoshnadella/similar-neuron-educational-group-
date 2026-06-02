@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SignUpButton, SignInButton, Show } from "@clerk/nextjs";
-import { Sparkles, Brain, ArrowRight, TrendingUp, Compass, Zap } from "lucide-react";
+import { Sparkles, Brain, ArrowRight, TrendingUp, Compass, Zap, Terminal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -118,6 +118,112 @@ export default function LandingPage() {
               title="Dynamic Knowledge Graphs"
               description="Every swipe builds your personalized mastery tree. Visualize your skills growing in real-time as you connect concepts across domains."
             />
+          </div>
+        </section>
+
+        {/* FOUNDER & ECOSYSTEM SECTION */}
+        <section style={{ padding: "100px 0", borderTop: "1px solid var(--kv-border)" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2 style={{ fontSize: 42, fontWeight: 800, marginBottom: 16 }}>The Architect Behind The Vision</h2>
+            <p style={{ color: "var(--kv-text-muted)", fontSize: 18, maxWidth: 600, margin: "0 auto" }}>
+              Meet the creator building the interconnected ecosystem of AI-powered cognitive tools.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: 40 }}>
+            {/* Header */}
+            <div style={{ display: "flex", gap: 24, alignItems: "flex-start", marginBottom: 40, flexWrap: "wrap" }}>
+              <div style={{ width: 90, height: 90, borderRadius: "50%", background: "var(--kv-gradient-primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "var(--kv-shadow-glow)" }}>
+                <Terminal size={40} color="white" />
+              </div>
+              <div style={{ flex: 1, minWidth: 300 }}>
+                <h3 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8 }}>Nadella Sai Raja Santhosh</h3>
+                <p style={{ color: "var(--kv-accent-cyan)", fontWeight: 700, fontSize: 16, marginBottom: 16 }}>
+                  Independent AI Researcher, Open-Source Contributor & Knowledge Systems Architect
+                </p>
+                <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.6, maxWidth: 800 }}>
+                  Building AI-native systems that connect intelligence, research, learning, simulation, creativity, and human potential through first-principles thinking.
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+                  <a href="https://github.com/Santhoshnadella" target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ padding: "8px 16px", fontSize: 14 }}>GitHub Profile</a>
+                  <a href="https://www.linkedin.com/in/santhosh-nadella-dev/" target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ padding: "8px 16px", fontSize: 14 }}>LinkedIn</a>
+                </div>
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div style={{ marginBottom: 48 }}>
+              <h4 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16, color: "white", borderBottom: "1px solid var(--kv-border)", paddingBottom: 10 }}>About Me</h4>
+              <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
+                I am an Independent AI Researcher, Open-Source Contributor, and interdisciplinary engineer with a background in Electrical & Electronics Engineering. My work spans artificial intelligence, machine learning, computer vision, NLP, computational biology, simulation systems, blockchain, educational technology, scientific computing, knowledge architecture, <strong>Full Stack Development, and System Design</strong>.
+              </p>
+              <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
+                I enjoy exploring the intersection of seemingly unrelated disciplines and transforming complex ideas into practical software systems. Rather than focusing on a single domain, I build tools that help people learn, research, create, and think more effectively.
+              </p>
+              <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7 }}>
+                My mission is to develop AI-powered knowledge systems that accelerate learning, scientific discovery, and cognitive growth. This vision has led me to create platforms such as Protocol, Bodhi AI, PureThought, and numerous open-source projects spanning education, research, simulation, finance, legal technology, biotechnology, and generative AI.
+              </p>
+            </div>
+
+            {/* The KnowledgeVerse Ecosystem */}
+            <div style={{ marginBottom: 48 }}>
+              <h4 style={{ fontSize: 20, fontWeight: 800, marginBottom: 20, color: "white", borderBottom: "1px solid var(--kv-border)", paddingBottom: 10 }}>The KnowledgeVerse Ecosystem</h4>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+                <a href="https://protocol-learning-platform.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.3)", padding: 24, borderRadius: 16, textDecoration: "none", transition: "transform 0.2s", display: "block" }}>
+                  <h5 style={{ color: "var(--kv-accent-violet)", fontSize: 18, fontWeight: 800, marginBottom: 12 }}>Protocol</h5>
+                  <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
+                    A minimalist, interactive learning platform designed for first-principles mastery. It transforms domains into structured roadmaps with interactive knowledge trees and AI-generated paths.
+                  </p>
+                  <span style={{ fontSize: 13, color: "white", fontWeight: 700 }}>Visit Protocol →</span>
+                </a>
+
+                <a href="https://ai-research-navigator.vercel.app/about" target="_blank" rel="noopener noreferrer" style={{ background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.3)", padding: 24, borderRadius: 16, textDecoration: "none", transition: "transform 0.2s", display: "block" }}>
+                  <h5 style={{ color: "var(--kv-accent-cyan)", fontSize: 18, fontWeight: 800, marginBottom: 12 }}>Bodhi AI</h5>
+                  <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
+                    An AI-powered research navigator and knowledge exploration platform. Rather than functioning as a search engine, it acts as a research companion to reveal connections across disciplines.
+                  </p>
+                  <span style={{ fontSize: 13, color: "white", fontWeight: 700 }}>Visit Bodhi AI →</span>
+                </a>
+
+                <a href="https://purethought-content-platform.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", padding: 24, borderRadius: 16, textDecoration: "none", transition: "transform 0.2s", display: "block" }}>
+                  <h5 style={{ color: "var(--kv-accent-emerald)", fontSize: 18, fontWeight: 800, marginBottom: 12 }}>PureThought</h5>
+                  <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
+                    A philosophy-driven knowledge platform focused on deep understanding rather than information consumption, built around first-principles reasoning and systems thinking.
+                  </p>
+                  <span style={{ fontSize: 13, color: "white", fontWeight: 700 }}>Visit PureThought →</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Open Source Portfolio & Publications */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 40 }}>
+              <div>
+                <h4 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: "white", borderBottom: "1px solid var(--kv-border)", paddingBottom: 10 }}>Open Source Portfolio</h4>
+                <p style={{ color: "var(--kv-text-secondary)", fontSize: 14, marginBottom: 16 }}>My repositories span multiple disciplines rather than a single specialization:</p>
+                <ul style={{ color: "var(--kv-text-secondary)", fontSize: 14, lineHeight: 1.7, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8, margin: 0 }}>
+                  <li><strong>AI & ML:</strong> MotionWeave (Neural Human Animation), OmniForge, RAG for PDFs</li>
+                  <li><strong>Simulation:</strong> GenShape, Fusion Plasma Digital Twin, Protein Frequency Simulator, Wave-Based Biological Modeling</li>
+                  <li><strong>Computer Vision:</strong> 4D Gaussian Splatting Studio, Neural Animation</li>
+                  <li><strong>Legal & Finance:</strong> ELLIPSIS IPC, Vakeel Saab, MACROMIND</li>
+                  <li><strong>Embedded / IoT:</strong> HWatch AI Smartwatch, TinyML Apps</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: "white", borderBottom: "1px solid var(--kv-border)", paddingBottom: 10 }}>Research Publications</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <a href="http://ijmtst.com/volume11/issue05/090IJMTST1105073.pdf" target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "rgba(255,255,255,0.05)", padding: 16, borderRadius: 12, textDecoration: "none", border: "1px solid var(--kv-border)" }}>
+                    <h5 style={{ color: "white", fontSize: 14, marginBottom: 8, lineHeight: 1.4 }}>Improving Health Monitoring Based on Smartwatches with Advanced Sensors and TinyML</h5>
+                    <span style={{ color: "var(--kv-accent-violet)", fontSize: 12, fontWeight: 700 }}>Read Publication ↗</span>
+                  </a>
+                  <a href="https://zenodo.org/records/19429989" target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "rgba(255,255,255,0.05)", padding: 16, borderRadius: 12, textDecoration: "none", border: "1px solid var(--kv-border)" }}>
+                    <h5 style={{ color: "white", fontSize: 14, marginBottom: 8, lineHeight: 1.4 }}>Digital Twin of the Human Brain: A Clinical-Grade Computational Framework</h5>
+                    <span style={{ color: "var(--kv-accent-violet)", fontSize: 12, fontWeight: 700 }}>View on Zenodo ↗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
