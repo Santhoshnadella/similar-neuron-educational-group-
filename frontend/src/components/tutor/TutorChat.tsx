@@ -149,9 +149,11 @@ export function TutorChat() {
               <Bot size={14} color="var(--kv-accent-cyan)" />
             </div>
             <div className="message-bubble assistant" style={{ overflowX: "auto" }}>
-              <ReactMarkdown className="prose prose-invert max-w-none text-[14px]">
-                {streamingContent + " ▌"}
-              </ReactMarkdown>
+              <div className="prose prose-invert max-w-none text-[14px]">
+                <ReactMarkdown>
+                  {streamingContent + " ▌"}
+                </ReactMarkdown>
+              </div>
             </div>
           </motion.div>
         )}
