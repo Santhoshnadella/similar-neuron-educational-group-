@@ -311,7 +311,7 @@ export default function LandingPage() {
             <div style={{ marginBottom: 48 }}>
               <h4 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16, color: "white", borderBottom: "1px solid var(--kv-border)", paddingBottom: 10 }}>About Me</h4>
               <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-                I am an Independent AI Researcher, Open-Source Contributor, and interdisciplinary engineer with a background in Electrical & Electronics Engineering. My work spans artificial intelligence, machine learning, computer vision, NLP, computational biology, simulation systems, blockchain, educational technology, scientific computing, knowledge architecture, <strong>Full Stack Development, and System Design</strong>.
+                I am an Independent AI Researcher, Open-Source Contributor, and interdisciplinary engineer with a background in Electrical & Electronics Engineering. My work spans artificial intelligence, machine learning, computer vision, NLP, computational biology, simulation systems, blockchain, educational technology, scientific computing, knowledge architecture, Full Stack Development, and System Design.
               </p>
               <p style={{ color: "var(--kv-text-secondary)", fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
                 I enjoy exploring the intersection of seemingly unrelated disciplines and transforming complex ideas into practical software systems. Rather than focusing on a single domain, I build tools that help people learn, research, create, and think more effectively.
