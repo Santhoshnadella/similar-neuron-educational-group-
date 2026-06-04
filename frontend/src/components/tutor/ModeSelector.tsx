@@ -9,6 +9,7 @@ const MODES = [
   { key: "story",        label: "📖 Story",      desc: "Narrative learning" },
   { key: "analogy",      label: "🔗 Analogy",    desc: "Compare to known" },
   { key: "socratic",     label: "❓ Socratic",   desc: "Guide by questions" },
+  { key: "creativity",   label: "🎨 Creativity",  desc: "Cross-domain synthesis" },
   { key: "intermediate", label: "⚙️ Detailed",   desc: "Technical depth" },
   { key: "expert",       label: "🔬 Expert",     desc: "Deep & rigorous" },
 ];

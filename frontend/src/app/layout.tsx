@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { DeepWorkButton } from "@/components/DeepWorkButton";
+import { FocusCoach } from "@/components/FocusCoach";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Providers>
             {children}
             <DeepWorkButton />
+            <FocusCoach />
           </Providers>
         </ClerkProvider>
       </body>

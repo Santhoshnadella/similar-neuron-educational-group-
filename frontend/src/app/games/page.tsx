@@ -16,8 +16,14 @@ export default function GamesPage() {
   const [score, setScore] = useState(0);
   const [playing, setPlaying] = useState(false);
   const nBackLevel = 2; // 2-Back
-
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Mental Rotation State
+  const [rotationScore, setRotationScore] = useState(0);
+  const [currentAngle, setCurrentAngle] = useState(0);
+  const [targetAngle, setTargetAngle] = useState(0);
+  const [rotationPlaying, setRotationPlaying] = useState(false);
+  const [rotationRounds, setRotationRounds] = useState(0);
 
   const startNBack = () => {
     const newSeq = Array.from({ length: 15 }, () => Math.floor(Math.random() * 9));
@@ -48,6 +54,33 @@ export default function GamesPage() {
     } else {
       setScore(prev => Math.max(0, prev - 1)); // penalty
     }
+  };
+
+  const startMentalRotation = () => {
+    setRotationScore(0);
+    setRotationRounds(0);
+    setRotationPlaying(true);
+    generateNextRotation();
+  };
+
+  const generateNextRotation = () => {
+    if (rotationRounds >= 10) {
+      setRotationPlaying(false);
+      finishGame("spatial_reasoning", rotationScore * 10);
+      return;
+    }
+    const angles = [0, 90, 180, 270];
+    setCurrentAngle(angles[Math.floor(Math.random() * 4)]);
+    setTargetAngle(angles[Math.floor(Math.random() * 4)]);
+    setRotationRounds(prev => prev + 1);
+  };
+
+  const handleRotationMatch = (isMatch: boolean) => {
+    const actuallyMatches = currentAngle === targetAngle;
+    if (isMatch === actuallyMatches) {
+      setRotationScore(prev => prev + 1);
+    }
+    generateNextRotation();
   };
 
   const finishGame = async (game: string, finalScore: number) => {
@@ -115,13 +148,34 @@ export default function GamesPage() {
             </div>
           ) : activeGame === "Pattern" ? (
              <div className="kv-card" style={{ padding: 48, textAlign: "center" }}>
-               <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Pattern Recognition</h2>
-               <p style={{ color: "var(--kv-text-muted)", marginBottom: 32 }}>
-                 (Pattern recognition component would go here)
-               </p>
-               <button className="btn btn-primary" onClick={() => finishGame("pattern", Math.random() * 100)} disabled={loading}>
-                 {loading ? <Loader2 className="animate-spin" /> : "Finish & Submit Score"}
-               </button>
+               <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Mental Rotation</h2>
+               
+               {!rotationPlaying ? (
+                 <div>
+                   <p style={{ marginBottom: 24, color: "var(--kv-text-muted)" }}>Determine if the two shapes are identical despite rotation.</p>
+                   <button className="btn btn-primary" onClick={startMentalRotation}>Start Game</button>
+                 </div>
+               ) : (
+                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 32 }}>
+                    <div style={{ display: "flex", gap: 48, justifyContent: "center" }}>
+                      {/* Shape 1 */}
+                      <div style={{ width: 100, height: 100, background: "var(--kv-accent-cyan)", clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)", transform: `rotate(${currentAngle}deg)`, transition: "transform 0.3s" }} />
+                      {/* Shape 2 */}
+                      <div style={{ width: 100, height: 100, background: "var(--kv-accent-cyan)", clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)", transform: `rotate(${targetAngle}deg)`, transition: "transform 0.3s" }} />
+                    </div>
+
+                    <div style={{ display: "flex", gap: 16 }}>
+                      <button className="btn btn-primary" onClick={() => handleRotationMatch(true)} style={{ background: "var(--kv-accent-emerald)", padding: "16px 32px" }}>Same Shape</button>
+                      <button className="btn btn-primary" onClick={() => handleRotationMatch(false)} style={{ background: "var(--kv-accent-rose)", padding: "16px 32px" }}>Different Shape</button>
+                    </div>
+
+                    <p style={{ color: "var(--kv-text-muted)" }}>Round {rotationRounds} / 10 | Score: {rotationScore}</p>
+                 </div>
+               )}
+               
+               <div style={{ marginTop: 32 }}>
+                <button className="btn btn-ghost" onClick={() => { setRotationPlaying(false); setActiveGame(null); }}>Cancel Game</button>
+               </div>
              </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
@@ -134,8 +188,8 @@ export default function GamesPage() {
               </div>
 
               <div className="kv-card" style={{ padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 700 }}>Pattern Recognition</h3>
-                <p style={{ color: "var(--kv-text-muted)", flex: 1 }}>Enhance your spatial reasoning and processing speed by identifying sequences under pressure.</p>
+                <h3 style={{ fontSize: 20, fontWeight: 700 }}>Mental Rotation</h3>
+                <p style={{ color: "var(--kv-text-muted)", flex: 1 }}>Enhance your spatial reasoning and processing speed by identifying rotated geometry.</p>
                 <button className="btn btn-primary" onClick={() => setActiveGame("Pattern")} style={{ width: "100%" }}>
                   <Play size={16} style={{ marginRight: 8 }} /> Play Now
                 </button>

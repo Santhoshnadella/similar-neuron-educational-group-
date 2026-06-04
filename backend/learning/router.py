@@ -188,6 +188,10 @@ async def end_session(
     from content.service import update_cognitive_profile_from_session
     await update_cognitive_profile_from_session(db, current_user, session)
 
+    # Event-Driven Achievements
+    from users.achievements import check_and_unlock_achievements
+    await check_and_unlock_achievements(db, current_user, "session_ended")
+
     await db.commit()
     
     return {
@@ -367,6 +371,11 @@ async def submit_game_score(
     
     xp_earned = int(score / 5)
     current_user.xp += xp_earned
+    
+    # Event-Driven Achievements
+    from users.achievements import check_and_unlock_achievements
+    await check_and_unlock_achievements(db, current_user, "game_completed")
+
     await db.commit()
     
     return {

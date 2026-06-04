@@ -10,14 +10,18 @@ export default function StudioPage() {
   const [title, setTitle] = useState("");
   const [domain, setDomain] = useState("");
   const [body, setBody] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !body) return;
+    if (!title) return;
     setLoading(true);
     try {
+      // In a real app, upload the `file` to AWS S3/Cloudinary here and get the URL.
+      // For now, we mock the upload and use the transcript.
+      const mockVideoUrl = file ? URL.createObjectURL(file) : "";
       await learningApi.uploadContent(title, body, domain || "General");
       setSuccess(true);
       setTitle("");
@@ -70,6 +74,17 @@ export default function StudioPage() {
             </div>
 
             <div>
+              <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>Media File (Optional)</label>
+              <input 
+                type="file" 
+                className="form-input" 
+                accept="video/*,audio/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)} 
+              />
+              <p style={{ fontSize: 12, color: "var(--kv-text-muted)", marginTop: 4 }}>Upload .mp4 or .mp3. The backend will process the transcript.</p>
+            </div>
+
+            <div>
               <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>Transcript / Content Body</label>
               <textarea 
                 className="form-input" 
@@ -77,7 +92,6 @@ export default function StudioPage() {
                 value={body} 
                 onChange={(e) => setBody(e.target.value)} 
                 placeholder="Paste the educational material here. The AI agents will process it."
-                required
               />
             </div>
 

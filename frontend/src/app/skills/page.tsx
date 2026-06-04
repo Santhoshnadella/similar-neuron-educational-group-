@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { learningApi } from "@/lib/api";
 import { Network, Loader2, Star, Target } from "lucide-react";
-import { motion } from "framer-motion";
+import ReactFlow, { Background, Controls, Node, Edge, useNodesState, useEdgesState } from 'reactflow';
+import 'reactflow/dist/style.css';
 
 export default function SkillsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   useEffect(() => {
     loadSkills();
@@ -19,6 +23,38 @@ export default function SkillsPage() {
     try {
       const res = await learningApi.getSkillsTree();
       setData(res);
+      
+      // Transform backend concepts to React Flow nodes
+      const initialNodes: Node[] = res.nodes.map((node: any, idx: number) => ({
+        id: node.id,
+        position: { x: (idx % 3) * 200 + 50, y: Math.floor(idx / 3) * 150 + 50 },
+        data: { label: node.name },
+        style: {
+          background: "var(--kv-bg-elevated)",
+          color: "var(--kv-text-primary)",
+          border: `2px solid var(--kv-accent-emerald)`,
+          borderRadius: 8,
+          padding: 12,
+          fontWeight: 700,
+          boxShadow: "0 0 15px rgba(16,185,129,0.3)"
+        }
+      }));
+      
+      // Mock some edges to show hierarchy
+      const initialEdges: Edge[] = [];
+      for (let i = 1; i < initialNodes.length; i++) {
+        initialEdges.push({
+          id: `e-${initialNodes[i-1].id}-${initialNodes[i].id}`,
+          source: initialNodes[i-1].id,
+          target: initialNodes[i].id,
+          animated: true,
+          style: { stroke: 'var(--kv-accent-emerald)', strokeWidth: 2 }
+        });
+      }
+
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+
     } catch (e) {
       console.error(e);
     } finally {
@@ -30,13 +66,13 @@ export default function SkillsPage() {
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        <div style={{ maxWidth: 1000, margin: "0 auto", paddingBottom: 80 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", paddingBottom: 80 }}>
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, display: "flex", alignItems: "center", gap: 10 }}>
               <Network size={26} color="var(--kv-accent-emerald)" />
-              Gamified <span className="gradient-text">Skill Tree</span>
+              Knowledge <span className="gradient-text">Graph</span>
             </h1>
-            <p style={{ color: "var(--kv-text-muted)" }}>Master knowledge nodes to unlock achievements.</p>
+            <p style={{ color: "var(--kv-text-muted)" }}>Interactive representation of your mapped neural network.</p>
           </div>
 
           {loading ? (
@@ -45,51 +81,28 @@ export default function SkillsPage() {
              </div>
           ) : data ? (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24 }}>
-              {/* Skill Tree Canvas */}
-              <div className="kv-card" style={{ padding: 24, minHeight: 600, position: "relative", overflow: "hidden" }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 24 }}>Knowledge Graph Nodes</h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-                  {data.nodes.map((node: any, idx: number) => {
-                    const mastered = true; // since these are returned from DB, we treat them as part of the graph
-                    return (
-                      <motion.div 
-                        key={node.id}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: idx * 0.05 }}
-                        style={{
-                          background: mastered ? "rgba(16,185,129,0.1)" : "var(--kv-bg-elevated)",
-                          border: `2px solid ${mastered ? "var(--kv-accent-emerald)" : "var(--kv-border)"}`,
-                          borderRadius: "50%",
-                          width: 100,
-                          height: 100,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          textAlign: "center",
-                          padding: 12,
-                          boxShadow: mastered ? "0 0 15px rgba(16,185,129,0.3)" : "none"
-                        }}
-                      >
-                        <Target size={20} color={mastered ? "var(--kv-accent-emerald)" : "var(--kv-text-muted)"} style={{ marginBottom: 8 }} />
-                        <span style={{ fontSize: 11, fontWeight: 600, color: mastered ? "var(--kv-text-primary)" : "var(--kv-text-muted)" }}>
-                          {node.name}
-                        </span>
-                      </motion.div>
-                    )
-                  })}
-                </div>
+              {/* React Flow Canvas */}
+              <div className="kv-card" style={{ height: "65vh", width: "100%", overflow: "hidden", borderRadius: 16 }}>
+                <ReactFlow 
+                  nodes={nodes} 
+                  edges={edges} 
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  fitView
+                >
+                  <Background color="#ccc" gap={16} />
+                  <Controls style={{ background: "var(--kv-bg-elevated)", fill: "var(--kv-text-primary)" }} />
+                </ReactFlow>
               </div>
 
               {/* Achievements Sidebar */}
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div className="kv-card" style={{ padding: 24 }}>
+                <div className="kv-card" style={{ padding: 24, height: "100%", overflowY: "auto" }}>
                   <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                    <Star size={20} color="var(--kv-accent-yellow)" /> Badges Unlocked
+                    <Star size={20} color="var(--kv-accent-yellow)" /> Badges
                   </h3>
                   {data.achievements.length === 0 ? (
-                    <p style={{ color: "var(--kv-text-muted)", fontSize: 14 }}>No badges yet. Keep learning!</p>
+                    <p style={{ color: "var(--kv-text-muted)", fontSize: 14 }}>No badges yet. Master concepts to unlock!</p>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {data.achievements.map((ach: any) => (
