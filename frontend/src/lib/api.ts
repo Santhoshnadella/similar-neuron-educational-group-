@@ -169,7 +169,7 @@ export const communityApi = {
 
 // ─── Learning ──────────────────────────────────────────────────
 export const learningApi = {
-  feed: (limit = 10) => request<{ feed: Content[] }>(`/learning/feed?limit=${limit}`),
+  feed: (limit = 10) => request<{ items: FeedItem[] }>(`/feed/personalized?limit=${limit}`),
   recordSession: (contentId: string, time: number) =>
     request<{ session_id: string; message: string }>("/learning/session", {
       method: "POST",
@@ -180,6 +180,7 @@ export const learningApi = {
       method: "POST",
       body: JSON.stringify({ duration_minutes: time }),
     }),
+  getDueFlashcards: () => request<{ cards: FlashCard[]; total: number }>("/learning/flashcards/due"),
   reviewFlashcard: (cardId: string, quality: number) =>
     request<{ card_id: string; new_stability: number; new_difficulty: number; next_review: string; xp_earned: number }>(`/learning/flashcards/${cardId}/review`, {
       method: "POST",
@@ -190,18 +191,15 @@ export const learningApi = {
       method: "POST",
       body: JSON.stringify({ game_type: gameType, score }),
     }),
-
   getSkillsTree: () =>
     request<{ nodes: any[]; achievements: any[] }>("/learning/skills/tree"),
-};
-
-// ─── Learning ──────────────────────────────────────────────────
-export const learningApi = {
-  startDeepWork: (durationMinutes: number = 60, topicId?: string) =>
-    request<{ status: string; session_id: string; message: string }>("/learning/session/deep-work", {
+  uploadContent: (title: string, body: string, domain: string) =>
+    request<{ message: string; content_id: string }>("/learning/content", {
       method: "POST",
-      body: JSON.stringify({ duration_minutes: durationMinutes, topic_id: topicId })
+      body: JSON.stringify({ title, body, domain }),
     }),
+  search: (query: string) =>
+    request<{ results: any[] }>(`/learning/search?q=${query}`),
 };
 
 // ─── Concepts / Knowledge Graph ────────────────────────────────

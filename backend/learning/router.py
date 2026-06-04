@@ -3,12 +3,121 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime, timezone
 from db.database import get_db
-from db.models import User, LearningSession, FlashCard
+from db.models import User, LearningSession, FlashCard, Content
+from db.vector import vector_db
 from auth.dependencies import get_current_user
 from learning.analytics import calculate_session_xp, update_learning_streak, get_user_analytics
 from learning.fsrs import FSRSScheduler, review_flashcard, get_due_cards
 
 router = APIRouter()
+
+
+@router.get("/search")
+async def search_content(
+    q: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Phase 3: Semantic Vector Search"""
+    results = vector_db.search(q, limit=5)
+    
+    if not results:
+        return {"results": []}
+        
+    # Get the content metadata from the DB
+    content_ids = [r["content_id"] for r in results]
+    stmt = select(Content).where(Content.id.in_(content_ids))
+    db_results = await db.execute(stmt)
+    content_items = db_results.scalars().all()
+    
+    # Map back to scores
+    final_results = []
+    for item in content_items:
+        score = next((r["score"] for r in results if r["content_id"] == item.id), 0)
+        final_results.append({
+            "id": item.id,
+            "title": item.title,
+            "type": item.type,
+            "domain": item.domain,
+            "score": score
+        })
+        
+    final_results.sort(key=lambda x: x["score"], reverse=True)
+    return {"results": final_results}
+
+from pydantic import BaseModel
+from agents.ai_client import ai_client
+
+class ContentUploadRequest(BaseModel):
+    title: str
+    body: str
+    domain: str
+
+@router.post("/content")
+async def upload_content(
+    request: ContentUploadRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Phase 3: Creator Studio Ingestion Pipeline"""
+    from db.models import Concept
+    
+    # 1. AI Extraction (Concepts)
+    prompt = f"Extract exactly 3 key educational concepts from this text. Return them as a comma-separated list of short phrases. Text: {request.body[:1000]}"
+    try:
+        concepts_str = await ai_client.chat([{"role": "user", "content": prompt}], max_tokens=100)
+        concept_names = [c.strip() for c in concepts_str.split(",") if c.strip()]
+    except Exception:
+        concept_names = ["General Knowledge"]
+        
+    # 2. AI Extraction (FlashCards)
+    qa_prompt = f"Create 1 highly specific Q&A flashcard based on this text. Format: Q: [question] | A: [answer]. Text: {request.body[:1000]}"
+    try:
+        qa_str = await ai_client.chat([{"role": "user", "content": qa_prompt}], max_tokens=150)
+        parts = qa_str.split("|")
+        q = parts[0].replace("Q:", "").strip() if len(parts) > 1 else "What is the main topic?"
+        a = parts[1].replace("A:", "").strip() if len(parts) > 1 else "Refer to the text."
+    except Exception:
+        q = "What is the main concept discussed?"
+        a = "Refer to the source material."
+
+    # 3. Save Concepts to DB (simplified for now)
+    concept_list = []
+    for name in concept_names:
+        result = await db.execute(select(Concept).where(Concept.name == name))
+        concept = result.scalar_one_or_none()
+        if not concept:
+            concept = Concept(name=name, domain=request.domain)
+            db.add(concept)
+        concept_list.append(name)
+        
+    await db.flush()
+
+    # 4. Save Content
+    content = Content(
+        title=request.title,
+        body=request.body,
+        domain=request.domain,
+        creator_id=current_user.id,
+        concepts=concept_list
+    )
+    db.add(content)
+    await db.flush()
+    
+    # 5. Embed in Qdrant
+    point_id = vector_db.add_content(content.id, request.body)
+    content.embedding_id = point_id
+    
+    # 6. Save FlashCard
+    card = FlashCard(
+        user_id=current_user.id,
+        content_id=content.id,
+        question=q,
+        answer=a
+    )
+    db.add(card)
+    await db.commit()
+    
+    return {"message": "Content ingested, analyzed, and embedded successfully.", "content_id": content.id}
 
 
 @router.post("/session/start")

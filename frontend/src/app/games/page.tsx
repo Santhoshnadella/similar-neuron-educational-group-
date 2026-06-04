@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { learningApi } from "@/lib/api";
@@ -10,10 +10,50 @@ export default function GamesPage() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const finishGame = async (game: string, score: number) => {
+  // N-Back State
+  const [sequence, setSequence] = useState<number[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [score, setScore] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const nBackLevel = 2; // 2-Back
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startNBack = () => {
+    const newSeq = Array.from({ length: 15 }, () => Math.floor(Math.random() * 9));
+    setSequence(newSeq);
+    setCurrentIndex(0);
+    setScore(0);
+    setPlaying(true);
+  };
+
+  useEffect(() => {
+    if (playing && activeGame === "N-Back" && currentIndex < sequence.length) {
+      timerRef.current = setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+      }, 2000); // 2 seconds per flash
+    } else if (playing && currentIndex >= sequence.length) {
+      setPlaying(false);
+      finishGame("n-back", score * 10); // scale score
+    }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [currentIndex, playing, activeGame]);
+
+  const handleNBackMatch = () => {
+    if (!playing || currentIndex < nBackLevel) return;
+    if (sequence[currentIndex] === sequence[currentIndex - nBackLevel]) {
+      setScore(prev => prev + 1);
+    } else {
+      setScore(prev => Math.max(0, prev - 1)); // penalty
+    }
+  };
+
+  const finishGame = async (game: string, finalScore: number) => {
     setLoading(true);
     try {
-      const res = await learningApi.submitGameScore(game, score);
+      const res = await learningApi.submitGameScore(game, finalScore);
       alert(`Score Submitted! New Cognitive Index: ${res.new_cognitive_index.toFixed(2)} | XP Earned: ${res.xp_earned}`);
       setActiveGame(null);
     } catch (e) {
@@ -36,25 +76,59 @@ export default function GamesPage() {
             <p style={{ color: "var(--kv-text-muted)" }}>Boost your working memory and spatial reasoning to upgrade your profile.</p>
           </div>
 
-          {activeGame ? (
+          {activeGame === "N-Back" ? (
             <div className="kv-card" style={{ padding: 48, textAlign: "center" }}>
-              <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Playing: {activeGame}</h2>
-              <p style={{ color: "var(--kv-text-muted)", marginBottom: 32 }}>
-                (Interactive game canvas would render here. Complete the test to submit score.)
-              </p>
-              <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-                <button className="btn btn-ghost" onClick={() => setActiveGame(null)}>Cancel</button>
-                <button className="btn btn-primary" onClick={() => finishGame(activeGame === "N-Back" ? "n-back" : "pattern", Math.random() * 100)} disabled={loading}>
-                  {loading ? <Loader2 className="animate-spin" /> : "Finish & Submit Score"}
-                </button>
+              <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Dual N-Back ({nBackLevel}-Back)</h2>
+              
+              {!playing && currentIndex === -1 ? (
+                <div>
+                  <p style={{ marginBottom: 24, color: "var(--kv-text-muted)" }}>Press "Match" when the current square lights up in the same position as 2 steps ago.</p>
+                  <button className="btn btn-primary" onClick={startNBack}>Start Game</button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 80px)", gap: 10, background: "var(--kv-bg-elevated)", padding: 20, borderRadius: 12 }}>
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div 
+                        key={i} 
+                        style={{ 
+                          width: 80, height: 80, 
+                          background: (playing && sequence[currentIndex] === i) ? "var(--kv-accent-violet)" : "rgba(255,255,255,0.05)",
+                          borderRadius: 8,
+                          transition: "background 0.2s"
+                        }} 
+                      />
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    <button className="btn btn-primary" onClick={handleNBackMatch} style={{ padding: "16px 48px", fontSize: 18 }} disabled={!playing}>
+                      Position Match!
+                    </button>
+                  </div>
+                  <p>Score: {score}</p>
+                </div>
+              )}
+              
+              <div style={{ marginTop: 32 }}>
+                <button className="btn btn-ghost" onClick={() => { setPlaying(false); setActiveGame(null); }}>Cancel Game</button>
               </div>
             </div>
+          ) : activeGame === "Pattern" ? (
+             <div className="kv-card" style={{ padding: 48, textAlign: "center" }}>
+               <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Pattern Recognition</h2>
+               <p style={{ color: "var(--kv-text-muted)", marginBottom: 32 }}>
+                 (Pattern recognition component would go here)
+               </p>
+               <button className="btn btn-primary" onClick={() => finishGame("pattern", Math.random() * 100)} disabled={loading}>
+                 {loading ? <Loader2 className="animate-spin" /> : "Finish & Submit Score"}
+               </button>
+             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
               <div className="kv-card" style={{ padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
                 <h3 style={{ fontSize: 20, fontWeight: 700 }}>Dual N-Back</h3>
-                <p style={{ color: "var(--kv-text-muted)", flex: 1 }}>Train your working memory and fluid intelligence by keeping track of audio and visual patterns.</p>
-                <button className="btn btn-primary" onClick={() => setActiveGame("N-Back")} style={{ width: "100%" }}>
+                <p style={{ color: "var(--kv-text-muted)", flex: 1 }}>Train your working memory and fluid intelligence by keeping track of visual patterns.</p>
+                <button className="btn btn-primary" onClick={() => { setActiveGame("N-Back"); setCurrentIndex(-1); }} style={{ width: "100%" }}>
                   <Play size={16} style={{ marginRight: 8 }} /> Play Now
                 </button>
               </div>
