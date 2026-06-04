@@ -43,7 +43,7 @@ export function TutorChat() {
         setLoading(false);
       }
     } catch (err: any) {
-      addMessage({ role: "assistant", content: `⚠️ ${err.message ?? "Error reaching AI. Is LM Studio running?"}` });
+      addMessage({ role: "assistant", content: `⚠️ ${err.message ?? "Error reaching AI. Please check connection."}` });
       setLoading(false);
     }
   };
@@ -68,7 +68,7 @@ export function TutorChat() {
           color: "var(--kv-accent-emerald)",
         }}>
           <Cpu size={12} />
-          Gemma 4 E2B via LM Studio
+          Powered by Groq Cloud AI
         </div>
         <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--kv-text-muted)", cursor: "pointer", marginLeft: "auto" }}>
           <input type="checkbox" checked={useStream} onChange={(e) => setUseStream(e.target.checked)} style={{ accentColor: "var(--kv-accent-purple)" }} />
@@ -83,7 +83,7 @@ export function TutorChat() {
             <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Your AI Tutor</h3>
             <p style={{ color: "var(--kv-text-muted)", maxWidth: 360, margin: "0 auto", lineHeight: 1.7 }}>
-              Ask anything. I'll teach it in <strong>{mode}</strong> mode using Gemma 4 running locally on your machine.
+              Ask anything. I'll teach it in <strong>{mode}</strong> mode powered by Groq.
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
               {["Explain quantum entanglement", "Teach me recursion", "What is neuroplasticity?", "How does RLHF work?"].map(s => (

@@ -1,10 +1,10 @@
-from agents.lm_studio import lm_studio
+from agents.ai_client import ai_client
 import logging
 
 logger = logging.getLogger(__name__)
 
 async def research_topic(topic: str) -> dict:
-    """Phase 4: Research Copilot utilizing Gemma 4 and real Wikipedia data."""
+    """Phase 4: Research Copilot utilizing Groq Cloud AI and real Wikipedia data."""
     import httpx
     
     # Fetch real context from Wikipedia
@@ -20,7 +20,7 @@ async def research_topic(topic: str) -> dict:
     except Exception as e:
         logger.error(f"Wikipedia search failed: {e}")
 
-    if await lm_studio.is_available():
+    if await ai_client.is_available():
         try:
             if context:
                 prompt = f"Act as a Research Copilot. Synthesize the following information about '{topic}':\n\n{context}"
@@ -28,10 +28,10 @@ async def research_topic(topic: str) -> dict:
                 prompt = f"Act as a Research Copilot. Summarize key papers and findings on '{topic}'."
                 
             messages = [{"role": "system", "content": "You are a research copilot."}, {"role": "user", "content": prompt}]
-            summary = await lm_studio.chat(messages, temperature=0.3)
+            summary = await ai_client.chat(messages, temperature=0.3)
             return {"topic": topic, "summary": summary, "sources": sources}
         except Exception as e:
-            logger.error(f"Gemma 4 Research failed: {e}")
+            logger.error(f"Groq Research failed: {e}")
             if context:
                 return {"topic": topic, "summary": context, "sources": sources}
     

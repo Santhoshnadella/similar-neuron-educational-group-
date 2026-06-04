@@ -8,7 +8,7 @@ import httpx
 
 from config import settings
 from db.models import User, CognitiveProfile
-from auth.schemas import UserCreate, OAuthRequest
+from auth.schemas import UserCreate, OAuthRequest, ClerkLoginRequest
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -120,6 +120,40 @@ async def oauth_login(db: AsyncSession, oauth_data: OAuthRequest) -> User:
         avatar_url=avatar,
         oauth_provider=oauth_data.provider,
         oauth_id=oauth_id,
+        cognitive_profile_id=profile.id,
+    )
+    db.add(user)
+    await db.flush()
+    await db.refresh(user)
+    return user
+
+
+async def clerk_login(db: AsyncSession, clerk_data: ClerkLoginRequest) -> User:
+    """Handle Clerk login — create or retrieve user."""
+    # Check if user exists
+    user = await get_user_by_email(db, clerk_data.email)
+    if user:
+        return user
+
+    # Create new user
+    profile = CognitiveProfile()
+    db.add(profile)
+    await db.flush()
+
+    # Generate unique username
+    base_username = clerk_data.username.lower().replace(" ", "_")[:30]
+    username = base_username
+    counter = 1
+    while await get_user_by_username(db, username):
+        username = f"{base_username}_{counter}"
+        counter += 1
+
+    user = User(
+        username=username,
+        email=clerk_data.email,
+        avatar_url=clerk_data.avatar_url,
+        oauth_provider="clerk",
+        oauth_id=clerk_data.clerk_id,
         cognitive_profile_id=profile.id,
     )
     db.add(user)

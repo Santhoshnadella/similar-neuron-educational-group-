@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_db
 from auth import service as auth_service
 from auth.schemas import (
-    UserCreate, UserLogin, UserResponse, TokenResponse, OAuthRequest
+    UserCreate, UserLogin, UserResponse, TokenResponse, OAuthRequest, ClerkLoginRequest
 )
 
 router = APIRouter()
@@ -51,6 +51,17 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
 async def oauth_login(oauth_data: OAuthRequest, db: AsyncSession = Depends(get_db)):
     """OAuth login (Google, GitHub)."""
     user = await auth_service.oauth_login(db, oauth_data)
+    token = auth_service.create_access_token({"sub": user.id, "username": user.username})
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer",
+        user=UserResponse.model_validate(user),
+    )
+
+@router.post("/clerk", response_model=TokenResponse)
+async def clerk_login(clerk_data: ClerkLoginRequest, db: AsyncSession = Depends(get_db)):
+    """Clerk login sync."""
+    user = await auth_service.clerk_login(db, clerk_data)
     token = auth_service.create_access_token({"sub": user.id, "username": user.username})
     return TokenResponse(
         access_token=token,

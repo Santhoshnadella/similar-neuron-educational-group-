@@ -43,6 +43,12 @@ export const authApi = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  clerkSync: (data: { clerk_id: string; email: string; username: string; avatar_url?: string }) =>
+    request<AuthResponse>("/auth/clerk", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
 
 // ─── Feed ──────────────────────────────────────────────────────

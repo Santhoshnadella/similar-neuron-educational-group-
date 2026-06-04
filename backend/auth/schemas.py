@@ -19,6 +19,13 @@ class OAuthRequest(BaseModel):
     access_token: str
 
 
+class ClerkLoginRequest(BaseModel):
+    clerk_id: str
+    email: str
+    username: str
+    avatar_url: Optional[str] = None
+
+
 class CognitiveProfileResponse(BaseModel):
     id: str
     working_memory: float

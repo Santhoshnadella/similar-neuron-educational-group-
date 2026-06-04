@@ -8,6 +8,7 @@ import { KnowledgeReel } from "@/components/feed/KnowledgeReel";
 import { feedApi, type FeedItem } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { Loader2, RefreshCw, TrendingUp, Users, Sparkles } from "lucide-react";
 
 const TABS = [
@@ -20,6 +21,7 @@ const TABS = [
 
 export default function FeedPage() {
   const { isAuthenticated } = useAuthStore();
+  const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
   const [tab, setTab] = useState("personalized");
   const [items, setItems] = useState<FeedItem[]>([]);
@@ -27,9 +29,22 @@ export default function FeedPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isAuthenticated) { router.push("/login"); return; }
+    // If Clerk is still loading, don't redirect yet
+    if (!isLoaded) return;
+    
+    // If not authenticated in our backend and not signed into Clerk, redirect to login
+    if (!isAuthenticated && !isSignedIn) { 
+      router.push("/login"); 
+      return; 
+    }
+    
+    // If signed into Clerk but not backend, wait for ClerkSync (loading state)
+    if (!isAuthenticated && isSignedIn) {
+      return;
+    }
+
     loadFeed(tab);
-  }, [tab, isAuthenticated]);
+  }, [tab, isAuthenticated, isLoaded, isSignedIn, router]);
 
   const loadFeed = async (activeTab: string) => {
     setLoading(true);
