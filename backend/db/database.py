@@ -14,12 +14,29 @@ if "sqlite" in db_url:
         connect_args={"check_same_thread": False},
     )
 else:
+    # Handle sslmode for asyncpg
+    connect_args = {}
+    if "sslmode=" in db_url or "ssl=" in db_url:
+        db_url = db_url.replace("?sslmode=require", "")
+        db_url = db_url.replace("&sslmode=require", "")
+        db_url = db_url.replace("sslmode=require", "")
+        db_url = db_url.replace("?ssl=require", "")
+        db_url = db_url.replace("&ssl=require", "")
+        db_url = db_url.replace("ssl=require", "")
+        
+        db_url = db_url.replace("?&", "?")
+        if db_url.endswith("?"):
+            db_url = db_url[:-1]
+            
+        connect_args["ssl"] = "require"
+        
     engine = create_async_engine(
         db_url,
         echo=settings.APP_ENV == "development",
         pool_pre_ping=True,
         pool_size=10,
         max_overflow=20,
+        connect_args=connect_args,
     )
 
 AsyncSessionLocal = async_sessionmaker(
