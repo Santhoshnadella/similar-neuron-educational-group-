@@ -153,12 +153,46 @@ export const usersApi = {
   me: () => request<User>("/users/me"),
   profile: (username: string) => request<User>(`/users/${username}`),
   achievements: () => request<{ achievements: Achievement[] }>("/users/me/achievements"),
+  dashboardStats: () => request<DashboardStatsResponse>("/users/me/dashboard_stats"),
 };
 
 // ─── Community ─────────────────────────────────────────────────
 export const communityApi = {
   guilds: () => request<{ guilds: Guild[] }>("/community/guilds"),
+  joinGuild: (guildId: string) => request<{ message: string }>(`/community/guilds/${guildId}/join`, { method: "POST" }),
   debates: () => request<{ debates: Debate[] }>("/community/debates"),
+  argueDebate: (debateId: string, argument: string) => request<{ message: string; xp_awarded: number; ai_feedback: string }>(`/community/debates/${debateId}/argue`, {
+    method: "POST",
+    body: JSON.stringify({ argument }),
+  }),
+};
+
+// ─── Learning ──────────────────────────────────────────────────
+export const learningApi = {
+  feed: (limit = 10) => request<{ feed: Content[] }>(`/learning/feed?limit=${limit}`),
+  recordSession: (contentId: string, time: number) =>
+    request<{ session_id: string; message: string }>("/learning/session", {
+      method: "POST",
+      body: JSON.stringify({ content_id: contentId, watch_time: time, interactions: 1 }),
+    }),
+  deepWork: (time: number) =>
+    request<{ message: string }>("/learning/deep_work", {
+      method: "POST",
+      body: JSON.stringify({ duration_minutes: time }),
+    }),
+  reviewFlashcard: (cardId: string, quality: number) =>
+    request<{ card_id: string; new_stability: number; new_difficulty: number; next_review: string; xp_earned: number }>(`/learning/flashcards/${cardId}/review`, {
+      method: "POST",
+      body: JSON.stringify(quality)
+    }),
+  submitGameScore: (gameType: string, score: number) =>
+    request<{ message: string; new_cognitive_index: number; xp_earned: number }>("/learning/games/score", {
+      method: "POST",
+      body: JSON.stringify({ game_type: gameType, score }),
+    }),
+
+  getSkillsTree: () =>
+    request<{ nodes: any[]; achievements: any[] }>("/learning/skills/tree"),
 };
 
 // ─── Learning ──────────────────────────────────────────────────
@@ -275,6 +309,23 @@ export interface TutorRequest {
   history?: ChatMessage[];
 }
 export interface TutorResponse { reply: string; mode: string; }
+
+export interface FlashCard {
+  id: string;
+  question: string;
+  answer: string;
+  concept_id: string | null;
+  stability: number;
+  difficulty: number;
+  review_count: number;
+}
+
+export interface DashboardStatsResponse {
+  total_deep_work_hours: number;
+  optimal_time: string;
+  average_focus: number;
+  time_series: { time: string; focus: number }[];
+}
 
 export interface RoadmapNode {
   id: string;

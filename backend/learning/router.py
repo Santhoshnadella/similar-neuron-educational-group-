@@ -229,3 +229,75 @@ async def start_deep_work(
         "xp_multiplier": 2.0,
         "message": "Deep work mode activated. Distractions blocked."
     }
+
+@router.post("/games/score")
+async def submit_game_score(
+    game_type: str = Body(...),
+    score: float = Body(...),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Phase 3: Submit cognitive game score and update profile natively."""
+    from db.models import CognitiveProfile
+    
+    result = await db.execute(select(CognitiveProfile).where(CognitiveProfile.id == current_user.cognitive_profile_id))
+    profile = result.scalar_one_or_none()
+    
+    if not profile:
+        profile = CognitiveProfile()
+        db.add(profile)
+        await db.flush()
+        current_user.cognitive_profile_id = profile.id
+    
+    if game_type == "n-back":
+        profile.working_memory = (profile.working_memory * 0.8) + (score * 0.2)
+    elif game_type == "pattern":
+        profile.spatial_reasoning = (profile.spatial_reasoning * 0.8) + (score * 0.2)
+        
+    profile.cognitive_index = (profile.working_memory + profile.processing_speed + profile.spatial_reasoning) / 3.0
+    
+    xp_earned = int(score / 5)
+    current_user.xp += xp_earned
+    await db.commit()
+    
+    return {
+        "message": "Score submitted",
+        "new_cognitive_index": profile.cognitive_index,
+        "xp_earned": xp_earned
+    }
+
+@router.get("/skills/tree")
+async def get_skills_tree(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Phase 3: Get gamified skill tree from actual Database entities."""
+    from db.models import Concept, Achievement
+    
+    # Query Knowledge Graph Nodes
+    result = await db.execute(select(Concept).limit(50))
+    concepts = result.scalars().all()
+    
+    # Query Unlocked Achievements
+    ach_result = await db.execute(select(Achievement).where(Achievement.user_id == current_user.id))
+    achievements = ach_result.scalars().all()
+    
+    return {
+        "nodes": [
+            {
+                "id": c.id,
+                "name": c.name,
+                "domain": c.domain,
+                "difficulty": c.difficulty,
+                "is_core": c.is_core,
+            } for c in concepts
+        ],
+        "achievements": [
+            {
+                "id": a.id,
+                "name": a.name,
+                "description": a.description,
+                "icon": a.icon
+            } for a in achievements
+        ]
+    }

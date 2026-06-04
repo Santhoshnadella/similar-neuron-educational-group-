@@ -210,3 +210,73 @@ async def get_following(
     following = following_result.scalars().all()
     
     return {"following": [UserResponse.model_validate(u) for u in following], "total": len(following)}
+
+@router.get("/me/dashboard_stats")
+async def get_dashboard_stats(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Phase 3 Gamification: Get dashboard stats for human optimization."""
+    from db.models import LearningSession
+    from sqlalchemy import select, func, extract
+    
+    # 1. Total Deep Work Hours
+    result = await db.execute(
+        select(LearningSession)
+        .where(LearningSession.user_id == current_user.id)
+    )
+    sessions = result.scalars().all()
+    
+    total_seconds = sum(s.watch_time for s in sessions if s.watch_time)
+    total_deep_work_hours = round(total_seconds / 3600.0, 1) if sessions else 0.0
+    
+    # 2. Average Focus Score
+    focus_scores = [s.focus_score for s in sessions if s.focus_score]
+    average_focus = int(sum(focus_scores) / len(focus_scores)) if focus_scores else 0
+    
+    # 3. Time Series & Peak Cognitive Hour
+    # Group by hour to find average focus per hour
+    # We will build a complete 24-hour dictionary to ensure we cover all times
+    hour_focus = {f"{h:02d}:00": [] for h in range(0, 24, 2)}
+    
+    for s in sessions:
+        if s.focus_score and s.started_at:
+            h = s.started_at.hour
+            # bucket into 2-hour windows (0, 2, 4, 6...)
+            bucket = (h // 2) * 2
+            hour_focus[f"{bucket:02d}:00"].append(s.focus_score)
+            
+    time_series = []
+    best_hour = "10:00"
+    max_avg = -1
+    
+    for time_bucket, scores in hour_focus.items():
+        avg = int(sum(scores) / len(scores)) if scores else 0
+        time_series.append({"time": time_bucket, "focus": avg})
+        if avg > max_avg and avg > 0:
+            max_avg = avg
+            best_hour = time_bucket
+            
+    # Default visual if no data
+    if not sessions:
+        time_series = [
+            {"time": "06:00", "focus": 0},
+            {"time": "08:00", "focus": 0},
+            {"time": "10:00", "focus": 0},
+            {"time": "12:00", "focus": 0},
+            {"time": "14:00", "focus": 0},
+            {"time": "16:00", "focus": 0},
+            {"time": "18:00", "focus": 0},
+            {"time": "20:00", "focus": 0},
+        ]
+        best_hour = "N/A"
+    else:
+        # filter to just daylight hours for clean UI if they have data
+        time_series = [ts for ts in time_series if 6 <= int(ts["time"].split(":")[0]) <= 22]
+
+    return {
+        "total_deep_work_hours": total_deep_work_hours,
+        "optimal_time": best_hour,
+        "average_focus": average_focus,
+        "time_series": time_series
+    }
