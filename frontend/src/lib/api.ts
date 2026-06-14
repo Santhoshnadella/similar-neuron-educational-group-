@@ -176,7 +176,7 @@ export const learningApi = {
       body: JSON.stringify({ content_id: contentId, watch_time: time, interactions: 1 }),
     }),
   deepWork: (time: number) =>
-    request<{ message: string }>("/learning/deep_work", {
+    request<{ session_id: string; message: string }>("/learning/session/deep-work", {
       method: "POST",
       body: JSON.stringify({ duration_minutes: time }),
     }),

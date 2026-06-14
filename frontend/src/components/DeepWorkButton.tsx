@@ -17,7 +17,7 @@ export function DeepWorkButton() {
   const startSession = async () => {
     setLoading(true);
     try {
-      const res = await learningApi.startDeepWork(60);
+      const res = await learningApi.deepWork(60);
       setActiveSession({ id: res.session_id, msg: res.message });
     } catch (e) {
       console.error(e);
