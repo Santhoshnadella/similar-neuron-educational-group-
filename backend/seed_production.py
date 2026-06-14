@@ -13,13 +13,21 @@ from db.models import User, Content, ContentType, Base
 from config import settings
 
 async def seed_data():
-    # Remove sslmode from URL as asyncpg handles it via connect_args
-    db_url = settings.DATABASE_URL.replace("?sslmode=require", "")
+    db_url = settings.DATABASE_URL
+    connect_args = {"timeout": 10}
+    if "?" in db_url:
+        base_url, query_params = db_url.split("?", 1)
+        if "sslmode=require" in query_params or "ssl=require" in query_params:
+            connect_args["ssl"] = True
+        db_url = base_url
+    if "neon.tech" in db_url:
+        connect_args["ssl"] = True
+
     print(f"Connecting to {db_url.split('@')[-1]}...")
     engine = create_async_engine(
         db_url, 
         echo=False,
-        connect_args={"ssl": True, "timeout": 10} if "neon.tech" in db_url else {"timeout": 10}
+        connect_args=connect_args
     )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

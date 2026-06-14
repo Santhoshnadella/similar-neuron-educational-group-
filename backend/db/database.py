@@ -16,18 +16,12 @@ if "sqlite" in db_url:
 else:
     # Handle sslmode for asyncpg
     connect_args = {"timeout": 10}
-    if "sslmode=" in db_url or "ssl=" in db_url:
-        db_url = db_url.replace("?sslmode=require", "")
-        db_url = db_url.replace("&sslmode=require", "")
-        db_url = db_url.replace("sslmode=require", "")
-        db_url = db_url.replace("?ssl=require", "")
-        db_url = db_url.replace("&ssl=require", "")
-        db_url = db_url.replace("ssl=require", "")
-        
-        db_url = db_url.replace("?&", "?")
-        if db_url.endswith("?"):
-            db_url = db_url[:-1]
-            
+    if "?" in db_url:
+        base_url, query_params = db_url.split("?", 1)
+        if "sslmode=require" in query_params or "ssl=require" in query_params:
+            connect_args["ssl"] = True
+        db_url = base_url
+    if "neon.tech" in db_url:
         connect_args["ssl"] = True
         
     engine = create_async_engine(
