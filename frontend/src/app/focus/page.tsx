@@ -31,7 +31,7 @@ export default function FocusModePage() {
   const handleStart = async () => {
     setLoading(true);
     try {
-      await learningApi.startDeepWork(durationMinutes);
+      await learningApi.deepWork(durationMinutes);
       setIsActive(true);
     } catch (e) {
       console.error(e);
