@@ -19,7 +19,7 @@ async def seed_data():
     engine = create_async_engine(
         db_url, 
         echo=False,
-        connect_args={"ssl": "require"} if "neon.tech" in db_url else {}
+        connect_args={"ssl": True} if "neon.tech" in db_url else {}
     )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

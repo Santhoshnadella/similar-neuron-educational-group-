@@ -28,7 +28,7 @@ else:
         if db_url.endswith("?"):
             db_url = db_url[:-1]
             
-        connect_args["ssl"] = "require"
+        connect_args["ssl"] = True
         
     engine = create_async_engine(
         db_url,
