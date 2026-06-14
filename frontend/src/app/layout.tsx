@@ -19,9 +19,13 @@ export const metadata: Metadata = {
   },
 };
 
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { ClerkProvider, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -31,27 +35,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ClerkProvider>
           <header style={{ padding: "16px", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px", borderBottom: "1px solid var(--kv-border)", height: "64px" }}>
-            <Show when="signed-out">
-              <SignInButton mode="modal" />
-              <SignUpButton mode="modal">
-                <button style={{ 
-                  background: "var(--kv-accent-violet)", 
-                  color: "white", 
-                  borderRadius: "9999px", 
-                  fontWeight: 500, 
-                  fontSize: "14px", 
-                  height: "40px", 
-                  padding: "0 20px", 
-                  cursor: "pointer",
-                  border: "none"
-                }}>
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </Show>
-            <Show when="signed-in">
+            {!isSignedIn ? (
+              <>
+                <SignInButton mode="modal" />
+                <SignUpButton mode="modal">
+                  <button style={{ 
+                    background: "var(--kv-accent-violet)", 
+                    color: "white", 
+                    borderRadius: "9999px", 
+                    fontWeight: 500, 
+                    fontSize: "14px", 
+                    height: "40px", 
+                    padding: "0 20px", 
+                    cursor: "pointer",
+                    border: "none"
+                  }}>
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </>
+            ) : (
               <UserButton />
-            </Show>
+            )}
           </header>
           <Providers>
             {children}

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SignUpButton, SignInButton, Show } from "@clerk/nextjs";
+import { SignUpButton, SignInButton, useAuth } from "@clerk/nextjs";
 import { Sparkles, Brain, ArrowRight, TrendingUp, Compass, Zap, Terminal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { useEffect } from "react";
 
 export default function LandingPage() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
 
   return (
     <div className="landing-wrapper" style={{ overflowX: "hidden", minHeight: "100vh" }}>
@@ -67,7 +68,7 @@ export default function LandingPage() {
             </p>
 
             <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "center" }}>
-              <Show when="signed-out">
+              {!isSignedIn ? (
                 <SignUpButton mode="modal">
                   <button className="btn btn-primary" style={{ 
                     fontSize: 18, padding: "16px 32px", borderRadius: 999,
@@ -77,8 +78,7 @@ export default function LandingPage() {
                     Start Learning Free <ArrowRight size={20} />
                   </button>
                 </SignUpButton>
-              </Show>
-              <Show when="signed-in">
+              ) : (
                 <Link href="/feed" style={{ textDecoration: "none" }}>
                   <button className="btn btn-primary" style={{ 
                     fontSize: 18, padding: "16px 32px", borderRadius: 999,
@@ -88,7 +88,7 @@ export default function LandingPage() {
                     Enter Your Feed <ArrowRight size={20} />
                   </button>
                 </Link>
-              </Show>
+              )}
             </div>
           </motion.div>
         </section>
