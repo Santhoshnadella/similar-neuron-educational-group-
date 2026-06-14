@@ -1,7 +1,6 @@
 import logging
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
-from sentence_transformers import SentenceTransformer
 import uuid
 
 logger = logging.getLogger(__name__)
@@ -14,16 +13,17 @@ class VectorDB:
         self.collection_name = "content_embeddings"
             
     def _lazy_init(self):
-        if self.client is not None:
-            return
-        try:
-            logger.info("Lazily initializing VectorDB (Qdrant & SentenceTransformer)...")
-            self.client = QdrantClient(path="qdrant_data")
-            self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
-            self._ensure_collection()
-            logger.info("Vector DB initialized successfully.")
-        except Exception as e:
-            logger.error(f"Failed to initialize VectorDB: {e}")
+      if self.client is not None:
+          return
+      try:
+          logger.info("Lazily initializing VectorDB (Qdrant & SentenceTransformer)...")
+          from sentence_transformers import SentenceTransformer
+          self.client = QdrantClient(path="qdrant_data")
+          self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
+          self._ensure_collection()
+          logger.info("Vector DB initialized successfully.")
+      except Exception as e:
+          logger.error(f"Failed to initialize VectorDB: {e}")
             self.client = None
             self.encoder = None
             
