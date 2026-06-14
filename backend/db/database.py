@@ -15,7 +15,7 @@ if "sqlite" in db_url:
     )
 else:
     # Handle sslmode for asyncpg
-    connect_args = {}
+    connect_args = {"timeout": 10}
     if "sslmode=" in db_url or "ssl=" in db_url:
         db_url = db_url.replace("?sslmode=require", "")
         db_url = db_url.replace("&sslmode=require", "")
