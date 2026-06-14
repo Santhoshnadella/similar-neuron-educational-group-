@@ -8,20 +8,24 @@ logger = logging.getLogger(__name__)
 
 class VectorDB:
     def __init__(self):
+        self.client = None
+        self.encoder = None
+        self.embedding_size = 384
+        self.collection_name = "content_embeddings"
+            
+    def _lazy_init(self):
+        if self.client is not None:
+            return
         try:
-            # Initialize Qdrant using local storage
+            logger.info("Lazily initializing VectorDB (Qdrant & SentenceTransformer)...")
             self.client = QdrantClient(path="qdrant_data")
-            
-            # Load a lightweight, fast embedding model
             self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
-            self.embedding_size = 384  # size for all-MiniLM-L6-v2
-            
-            self.collection_name = "content_embeddings"
             self._ensure_collection()
             logger.info("Vector DB initialized successfully.")
         except Exception as e:
             logger.error(f"Failed to initialize VectorDB: {e}")
             self.client = None
+            self.encoder = None
             
     def _ensure_collection(self):
         if not self.client:
@@ -38,6 +42,7 @@ class VectorDB:
             
     def add_content(self, content_id: str, text: str) -> str:
         """Embeds text and adds it to Qdrant. Returns the Point ID."""
+        self._lazy_init()
         if not self.client or not text:
             return None
             
@@ -55,9 +60,10 @@ class VectorDB:
             ]
         )
         return point_id
-
+ 
     def search(self, query: str, limit: int = 5):
         """Searches for similar content in Qdrant."""
+        self._lazy_init()
         if not self.client or not query:
             return []
             
